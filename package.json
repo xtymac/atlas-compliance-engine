@@ -1,0 +1,16 @@
+{
+  "name": "atlas-compliance-engine-prototype",
+  "version": "0.1.0",
+  "description": "Atlas Compliance Engine (ACE) prototype - CMS + DAS abstraction with GIF-compliant rigor.",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "NODE_ENV=production node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2",
+    "uuid": "^9.0.1",
+    "zod": "^3.23.8"
+  }
+}

@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ACE CMS Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --surface: #ffffff;
+      --ink: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #1677ff;
+      --accent-soft: #e7f0ff;
+      --topbar: #1f1f1f;
+      --shadow: 0 8px 22px rgba(0,0,0,0.06);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter","Noto Sans JP",system-ui,-apple-system,sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+    .topbar {
+      height: 48px;
+      background: var(--topbar);
+      color: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-weight: 600;
+    }
+    .crumb { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .user-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #374151; color: #f9fafb; display: grid; place-items: center;
+      font-weight: 700; font-size: 13px;
+    }
+    .shell {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: calc(100vh - 48px);
+    }
+    aside.nav {
+      background: #f9fafb;
+      border-right: 1px solid var(--border);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; padding: 10px; border-radius: 8px; }
+    .brand-icon { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #111827, #2563eb); }
+    .nav-list { display: grid; gap: 4px; }
+    .nav-list button {
+      all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px; font-weight: 500; color: #374151;
+    }
+    .nav-list button.active { background: #e6f0ff; color: #0f4bb8; }
+    .workspace { padding: 16px 18px; }
+    .hidden { display: none !important; }
+    /* Models page */
+    .header-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    h2 { margin: 0; font-size: 18px; letter-spacing: -0.01em; }
+    p { margin: 0; color: var(--muted); }
+    input, select {
+      font: inherit; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: #fff; color: var(--ink);
+    }
+    .btn {
+      all: unset; cursor: pointer; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--surface); font-weight: 600; color: var(--ink);
+    }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .cards { margin-top: 14px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px;
+      display: grid; gap: 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+    }
+    .card h3 { margin: 0; font-size: 15px; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .card footer { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; }
+    .icon-row { display: flex; gap: 10px; }
+    .icon { width: 16px; height: 16px; border: 1px solid var(--border); border-radius: 4px; display: grid; place-items: center; color: #6b7280; font-size: 11px; }
+    .badge {
+      padding: 4px 8px; background: #e7f0ff; color: #0f4bb8; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+    }
+    /* Schema page */
+    main.schema { background: var(--surface); }
+    .schema-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tabbar { display: flex; gap: 14px; margin: 10px 0 12px 0; border-bottom: 1px solid var(--border); }
+    .tab { padding: 10px 0; cursor: pointer; font-weight: 600; border-bottom: 2px solid transparent; color: #4b5563; }
+    .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+    .layout { display: grid; grid-template-columns: 240px 1fr 260px; gap: 16px; align-items: start; }
+    .left-list {
+      border: 1px solid var(--border); border-radius: 12px; background: #fdfdfd; padding: 14px;
+      height: calc(100vh - 160px); overflow: auto;
+    }
+    .section-title { font-weight: 700; font-size: 12px; color: #6b7280; margin: 12px 0 8px; }
+    .item { padding: 9px 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .item.active { background: #e6f0ff; color: #0f4bb8; }
+    .field-list {
+      border: 1px solid var(--border); border-radius: 12px; background: #fff; box-shadow: var(--shadow);
+      min-height: 400px; padding: 10px;
+    }
+    .field-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: grid;
+      gap: 6px;
+      margin: 8px 0;
+      background: #fff;
+      transition: transform 140ms ease, margin 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+      cursor: pointer;
+    }
+    .field-card.drop-target { border-color: #2563eb; background: #f0f7ff; }
+    .field-placeholder {
+      border: 1px dashed #2563eb;
+      border-radius: 10px;
+      height: 54px;
+      margin: 8px 0;
+      background: #f8fbff;
+      transition: all 140ms ease;
+    }
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+    .modal {
+      width: min(760px, 94vw);
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.18);
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; }
+    .modal-tabs { display: flex; gap: 12px; border-bottom: 1px solid var(--border); margin: 0 -6px; padding: 0 6px; }
+    .modal-tab {
+      padding: 10px 6px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-weight: 600;
+      color: #4b5563;
+    }
+    .modal-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+    .modal-body { display: grid; gap: 10px; }
+    .modal-section { display: grid; gap: 8px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+    .pill-switch { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; }
+    .pill-switch input { width: 16px; height: 16px; }
+    textarea { resize: vertical; min-height: 60px; }
+    .field-top { display: flex; align-items: center; justify-content: space-between; }
+    .field-meta { display: flex; align-items: center; gap: 10px; color: #6b7280; font-size: 12px; }
+    .drag-handle { width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 4px; display: grid; place-items: center; font-size: 11px; color: #6b7280; cursor: grab; }
+    .field-type { padding: 2px 6px; border-radius: 999px; background: var(--accent-soft); color: #0f4bb8; font-size: 11px; font-weight: 700; }
+    .palette {
+      background: #fbfcfd;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      height: 100%;
+      overflow: auto;
+    }
+    .palette-title { font-weight: 700; margin: 0 0 8px 0; }
+    .palette-group { margin-bottom: 16px; }
+    .palette-item {
+      border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: #fff;
+      display: grid; gap: 4px; margin: 6px 0; cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+    .palette-item:hover { border-color: var(--accent); }
+    .palette-item strong { font-size: 13px; }
+    .palette-item span { color: var(--muted); font-size: 12px; }
+    .drop-hint {
+      text-align: center; color: #9ca3af; font-size: 13px; padding: 12px 0;
+      border: 1px dashed var(--border); border-radius: 10px; margin: 10px 0;
+    }
+    @media (max-width: 1200px) {
+      .shell { grid-template-columns: 220px 1fr; }
+      .layout { grid-template-columns: 240px 1fr; }
+      .palette { display: none; }
+    }
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      aside.nav { flex-direction: row; overflow-x: auto; }
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="crumb">
+      <span>Re:Earth CMS</span>
+      <span style="opacity:0.7;">/</span>
+      <span id="crumb-title">Models</span>
+    </div>
+    <div class="user-dot">M</div>
+  </div>
+
+  <div class="shell">
+    <aside class="nav">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        ACE CMS
+      </div>
+      <div class="nav-list">
+        <button data-view="templates">🧭 Templates</button>
+        <button class="active" data-view="models">📦 Models</button>
+        <button data-view="schema">🧩 Schema</button>
+        <button>🗂️ Content</button>
+        <button>🗄️ Asset</button>
+        <button>📨 Request</button>
+      </div>
+    </aside>
+
+    <div id="models-view" class="workspace">
+      <div class="header-row">
+        <div>
+          <h2>Models</h2>
+          <p>標準テンプレートとカスタムモデルを管理</p>
+        </div>
+        <div class="header-row" style="margin-left:auto;">
+          <input placeholder="search models" style="width:200px;">
+          <select>
+            <option>Sort by updatedAt</option>
+            <option>Sort by name</option>
+            <option>Sort by createdAt</option>
+          </select>
+          <button class="btn primary">+ New Model</button>
+        </div>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3>公共施設一覧</h3><span class="badge">Template</span>
+          </div>
+          <div class="muted">#public_facility</div>
+          <footer>
+            <div class="icon-row">
+              <div class="icon">≡</div><div class="icon">▦</div><div class="icon">↓</div><div class="icon">⋯</div>
+            </div>
+          </footer>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3>AED設置箇所一覧</h3><span class="badge">Template</span>
+          </div>
+          <div class="muted">#aed_location</div>
+          <footer>
+            <div class="icon-row">
+              <div class="icon">≡</div><div class="icon">▦</div><div class="icon">↓</div><div class="icon">⋯</div>
+            </div>
+          </footer>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3>新規カスタムモデル</h3><span class="badge" style="background:#eef2ff;color:#4338ca;">Custom</span>
+          </div>
+          <div class="muted">自由にフィールドを定義</div>
+          <button class="btn primary" style="justify-self:start;">Start</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="schema-wrapper" class="schema hidden">
+      <main class="schema workspace">
+        <div class="schema-header">
+          <h2>公共施設一覧</h2>
+          <span class="muted">#public_facility</span>
+      </div>
+        <div class="tabbar">
+          <div class="tab active">Fields</div>
+          <div class="tab">Meta Data</div>
+        </div>
+
+        <div class="layout">
+          <div class="left-list">
+            <div class="section-title">MODELS <span style="float:right; color:#2563eb; cursor:pointer;">+ Add</span></div>
+            <div class="item active" data-model="public-facilities">公共施設一覧</div>
+            <div class="item" data-model="childcare-facilities">子育て施設一覧</div>
+            <div class="section-title">GROUPS <span style="float:right; color:#2563eb; cursor:pointer;">+ Add</span></div>
+            <div class="item">名称 (Name)</div>
+            <div class="item">外部識別子</div>
+            <div class="item">所在地 (Address)</div>
+            <div class="item">連絡先 (Contact)</div>
+            <div class="item">利用可能時間</div>
+            <div class="item">画像 (Media)</div>
+          </div>
+
+          <div>
+            <div class="drop-hint">右側のフィールドをドラッグしてここにドロップ</div>
+            <div id="field-list" class="field-list"></div>
+          </div>
+          <div class="palette">
+            <h3 class="palette-title">Add Field</h3>
+            <div id="palette"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div id="templates-view" class="workspace hidden">
+      <div class="header-row">
+        <div>
+          <h2>Templates</h2>
+          <p>標準テンプレートを適用 / プレビュー</p>
+        </div>
+      </div>
+      <div class="cards" id="templates-cards"></div>
+    </div>
+  </div>
+
+  <!-- Field Edit Modal -->
+  <div id="modal-backdrop" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="muted" style="font-size:12px;">Update Field</div>
+          <h3 id="modal-title" style="margin:0;">Field</h3>
+        </div>
+        <button id="modal-close" class="btn">✕</button>
+      </div>
+      <div class="modal-tabs">
+        <div class="modal-tab active" data-tab="settings">Settings</div>
+        <div class="modal-tab" data-tab="validation">Validation</div>
+        <div class="modal-tab" data-tab="default">Default value</div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section modal-pane" data-pane="settings">
+          <div>
+            <label>Display name</label>
+            <input id="field-display" placeholder="表示名">
+          </div>
+          <div>
+            <label>Field Key</label>
+            <input id="field-key" placeholder="field_key">
+            <div class="muted" style="font-size:12px;">半角英数字とハイフン/アンダースコアのみ</div>
+          </div>
+          <div>
+            <label>Description <span class="muted">(optional)</span></label>
+            <textarea id="field-desc" maxlength="1000" placeholder="説明文"></textarea>
+          </div>
+          <div id="field-options-section" class="modal-section" style="display:none;">
+            <label>Options (カンマ区切り)</label>
+            <input id="field-options" placeholder="yes,no,unknown">
+            <div class="pill-switch"><input type="checkbox" id="field-multi"> <label for="field-multi">Support multiple values</label></div>
+          </div>
+        </div>
+        <div class="modal-section modal-pane hidden" data-pane="validation">
+          <div class="pill-switch"><input type="checkbox" id="field-required"> <label for="field-required">Required (◎)</label></div>
+          <div id="field-pattern-section" style="display:none;">
+            <label>Pattern (regex)</label>
+            <input id="field-pattern" placeholder="例: ^[0-9]{6}$">
+          </div>
+        </div>
+        <div class="modal-section modal-pane hidden" data-pane="default">
+          <div>
+            <label>Default value</label>
+            <input id="field-default" placeholder="デフォルト値">
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn">Cancel</button>
+        <button id="modal-save" class="btn primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // View switcher
+    const navButtons = document.querySelectorAll('.nav-list button[data-view]');
+    const crumbTitle = document.getElementById('crumb-title');
+    const modelsView = document.getElementById('models-view');
+    const schemaWrapper = document.getElementById('schema-wrapper');
+    const templatesView = document.getElementById('templates-view');
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.dataset.view;
+        modelsView.classList.add('hidden');
+        schemaWrapper.classList.add('hidden');
+        templatesView.classList.add('hidden');
+        if (target === 'schema') {
+          schemaWrapper.classList.remove('hidden');
+        } else if (target === 'templates') {
+          templatesView.classList.remove('hidden');
+        } else {
+          modelsView.classList.remove('hidden');
+        }
+        crumbTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+      });
+    });
+
+    // Schema drag/drop
+    const fieldListEl = document.getElementById('field-list');
+    const paletteEl = document.getElementById('palette');
+
+    const initialFields = [
+      { label: "全国地方公共団体コード", key: "localGovernmentCode", type: "Text", meta: "半角数字6桁" },
+      { label: "ID", key: "identifier", type: "Text", meta: "半角英数字" },
+      { label: "名称 (Name)", key: "name", type: "Text" },
+      { label: "所在地 (Address)", key: "address", type: "Text" },
+      { label: "連絡先 (Contact)", key: "contact", type: "Text" },
+      { label: "緯度 / 経度", key: "latitudeLongitude", type: "Coordinate", meta: "GIF bounds -90/90 -180/180" },
+      { label: "データセット最終更新日", key: "datasetUpdatedAt", type: "Date" }
+    ];
+
+    const childcareFields = [
+      { label: "全国地方公共団体コード", key: "localGovernmentCode", type: "Text", meta: "半角数字6桁" },
+      { label: "ID", key: "identifier", type: "Text", meta: "半角英数字" },
+      { label: "施設名", key: "facilityName", type: "Text" },
+      { label: "施設種別", key: "facilityCategory", type: "Option", meta: "保育所,幼稚園,認定こども園,学童,その他" },
+      { label: "所在地 (Address)", key: "address", type: "Text" },
+      { label: "電話番号", key: "phone", type: "Text" },
+      { label: "開所時間", key: "openingHours", type: "Text" },
+      { label: "緯度 / 経度", key: "latitudeLongitude", type: "Coordinate", meta: "GIF bounds -90/90 -180/180" },
+      { label: "データセット最終更新日", key: "datasetUpdatedAt", type: "Date" }
+    ];
+
+    const paletteGroups = [
+      { title: "Text", items: [
+        { label: "Text", desc: "単行テキスト", type: "Text" },
+        { label: "TextArea", desc: "複数行テキスト", type: "TextArea" },
+        { label: "Markdown", desc: "リッチテキスト", type: "Markdown" }
+      ]},
+      { title: "Asset", items: [
+        { label: "Asset", desc: "ファイル / 3D Tiles / CityGML", type: "Asset" }
+      ]},
+      { title: "Time", items: [
+        { label: "Date", desc: "Date picker", type: "Date" }
+      ]},
+      { title: "Boolean", items: [
+        { label: "Boolean", desc: "true/false", type: "Boolean" }
+      ]},
+      { title: "Select", items: [
+        { label: "Option", desc: "統制語彙 / Enum", type: "Option" }
+      ]},
+      { title: "Number", items: [
+        { label: "Int", desc: "Integer", type: "Int" },
+        { label: "Float", desc: "Fractional", type: "Float" }
+      ]},
+      { title: "Geo", items: [
+        { label: "Coordinate", desc: "緯度・経度 (GIF)", type: "Coordinate" }
+      ]}
+    ];
+
+    const modelStore = {
+      "public-facilities": {
+        label: "公共施設一覧",
+        fields: [...initialFields],
+        meta: initialFields.map((f) => ({
+          display: f.label,
+          key: f.key,
+          description: f.meta || "",
+          required: false,
+          options: [],
+          allowMultiple: false,
+          pattern: f.meta && f.meta.includes("6桁") ? "^[0-9]{6}$" : "",
+          defaultValue: ""
+        }))
+      },
+      "childcare-facilities": {
+        label: "子育て施設一覧",
+        fields: [...childcareFields],
+        meta: childcareFields.map((f) => ({
+          display: f.label,
+          key: f.key,
+          description: f.meta || "",
+          required: false,
+          options: f.type === "Option" && f.meta ? f.meta.split(",") : [],
+          allowMultiple: false,
+          pattern: f.meta && f.meta.includes("6桁") ? "^[0-9]{6}$" : "",
+          defaultValue: ""
+        }))
+      }
+    };
+    const templateList = [
+      { id: "public-facilities", label: "公共施設一覧", key: "public_facility" },
+      { id: "aed-locations", label: "AED設置箇所一覧", key: "aed_location" },
+      { id: "childcare-facilities", label: "子育て施設一覧", key: "childcare_facility" }
+    ];
+
+    let currentModelId = "public-facilities";
+
+    function currentFields() {
+      return modelStore[currentModelId].fields;
+    }
+    function currentMeta() {
+      return modelStore[currentModelId].meta;
+    }
+    const placeholder = document.createElement('div');
+    placeholder.className = 'field-placeholder';
+    let currentPlaceholderIndex = null;
+
+    function removePlaceholder() {
+      if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+      currentPlaceholderIndex = null;
+    }
+
+    function placeholderIndex() {
+      if (!fieldListEl) return fields.length;
+      const children = Array.from(fieldListEl.children);
+      let idx = 0;
+      for (const child of children) {
+        if (child === placeholder) break;
+        if (child.classList.contains('field-card')) idx++;
+      }
+      return idx;
+    }
+
+    function showPlaceholderAt(idx) {
+      if (idx === currentPlaceholderIndex) return;
+      removePlaceholder();
+      const cards = Array.from(fieldListEl.querySelectorAll('.field-card'));
+      if (cards[idx]) {
+        fieldListEl.insertBefore(placeholder, cards[idx]);
+      } else {
+        fieldListEl.appendChild(placeholder);
+      }
+      currentPlaceholderIndex = idx;
+    }
+
+    function calcInsertIndex(clientY) {
+      const cards = Array.from(fieldListEl.querySelectorAll('.field-card'));
+      for (let i = 0; i < cards.length; i++) {
+        const rect = cards[i].getBoundingClientRect();
+        const upper = rect.top + rect.height * 0.35;
+        const lower = rect.bottom - rect.height * 0.35;
+        if (clientY < upper) return i;         // top zone: insert before
+        if (clientY > lower) continue;         // bottom zone: keep scanning
+        return i + 1;                          // middle zone: insert after
+      }
+      return cards.length;
+    }
+
+    function addField(item, index = currentFields().length) {
+      const key = `${item.type.toLowerCase()}_${(Date.now()).toString(36).slice(-4)}`;
+      const newField = { label: item.label, key, type: item.type, meta: item.desc };
+      currentFields().splice(index, 0, newField);
+      currentMeta().splice(index, 0, {
+        display: item.label,
+        key,
+        description: item.desc || "",
+        required: false,
+        options: [],
+        allowMultiple: false,
+        pattern: "",
+        defaultValue: ""
+      });
+      renderFields();
+      removePlaceholder();
+    }
+
+    function renderFields() {
+      if (!fieldListEl) return;
+      fieldListEl.innerHTML = "";
+      currentFields().forEach((f, idx) => {
+        const card = document.createElement('div');
+        card.className = 'field-card';
+        card.dataset.index = idx;
+        card.innerHTML = `
+          <div class="field-top">
+            <div class="field-meta">
+              <span class="drag-handle" draggable="true" title="Drag">≡</span>
+              <strong>${f.label}</strong>
+            </div>
+            <span class="field-type">${f.type}</span>
+          </div>
+          <div class="field-meta">
+            <span>#${f.key}</span>
+            ${f.meta ? `<span>• ${f.meta}</span>` : ""}
+          </div>
+        `;
+        card.addEventListener('click', () => openModal(idx));
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          card.classList.add('drop-target');
+          const insertIdx = calcInsertIndex(e.clientY);
+          showPlaceholderAt(insertIdx);
+        });
+        card.addEventListener('dragleave', () => {
+          card.classList.remove('drop-target');
+        });
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          card.classList.remove('drop-target');
+          const data = e.dataTransfer.getData('application/json');
+          if (!data) return;
+          const item = JSON.parse(data);
+          const insertIdx = placeholder.parentNode ? placeholderIndex() : calcInsertIndex(e.clientY);
+          addField(item, insertIdx);
+        });
+        fieldListEl.appendChild(card);
+      });
+    }
+
+    function renderPalette() {
+      if (!paletteEl) return;
+      paletteEl.innerHTML = "";
+      paletteGroups.forEach(group => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'palette-group';
+        const title = document.createElement('div');
+        title.className = 'section-title';
+        title.textContent = group.title;
+        wrapper.appendChild(title);
+        group.items.forEach(item => {
+          const el = document.createElement('div');
+          el.className = 'palette-item';
+          el.draggable = true;
+          el.dataset.type = item.type;
+          el.dataset.label = item.label;
+          el.innerHTML = `<strong>${item.label}</strong><span>${item.desc}</span>`;
+          el.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('application/json', JSON.stringify(item));
+          });
+          wrapper.appendChild(el);
+        });
+        paletteEl.appendChild(wrapper);
+      });
+    }
+
+    if (fieldListEl) {
+      fieldListEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fieldListEl.style.borderColor = "#2563eb";
+        const insertIdx = calcInsertIndex(e.clientY);
+        showPlaceholderAt(insertIdx);
+      });
+
+      fieldListEl.addEventListener('dragleave', () => {
+        fieldListEl.style.borderColor = "var(--border)";
+        removePlaceholder();
+      });
+
+      fieldListEl.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fieldListEl.style.borderColor = "var(--border)";
+        const idx = placeholder.parentNode ? placeholderIndex() : calcInsertIndex(e.clientY);
+        const data = e.dataTransfer.getData('application/json');
+        if (!data) return;
+        const item = JSON.parse(data);
+        addField(item, idx); // drop at placeholder or calculated position
+      });
+    }
+
+    renderFields();
+    renderPalette();
+  </script>
+  <script>
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalTitle = document.getElementById('modal-title');
+    const modalClose = document.getElementById('modal-close');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalSave = document.getElementById('modal-save');
+    const tabs = document.querySelectorAll('.modal-tab');
+    const panes = document.querySelectorAll('.modal-pane');
+    const displayInput = document.getElementById('field-display');
+    const keyInput = document.getElementById('field-key');
+    const descInput = document.getElementById('field-desc');
+    const optionsSection = document.getElementById('field-options-section');
+    const optionsInput = document.getElementById('field-options');
+    const multiInput = document.getElementById('field-multi');
+    const requiredInput = document.getElementById('field-required');
+    const patternSection = document.getElementById('field-pattern-section');
+    const patternInput = document.getElementById('field-pattern');
+    const defaultInput = document.getElementById('field-default');
+    let editingIndex = null;
+
+    function switchTab(tabName) {
+      tabs.forEach(t => {
+        const active = t.dataset.tab === tabName;
+        t.classList.toggle('active', active);
+      });
+      panes.forEach(p => {
+        const show = p.dataset.pane === tabName;
+        p.classList.toggle('hidden', !show);
+      });
+    }
+    tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+    function openModal(idx) {
+      editingIndex = idx;
+      const f = currentFields()[idx];
+      const meta = currentMeta()[idx];
+      modalTitle.textContent = `${meta.display || f.label}`;
+      displayInput.value = meta.display || f.label || "";
+      keyInput.value = meta.key || f.key || "";
+      descInput.value = meta.description || "";
+      optionsSection.style.display = f.type === "Option" ? "grid" : "none";
+      optionsInput.value = (meta.options || []).join(",");
+      multiInput.checked = !!meta.allowMultiple;
+      requiredInput.checked = !!meta.required;
+      patternSection.style.display = f.type === "Text" || f.type === "Coordinate" ? "block" : "none";
+      patternInput.value = meta.pattern || "";
+      defaultInput.value = meta.defaultValue || "";
+      switchTab("settings");
+      modalBackdrop.style.display = "flex";
+    }
+
+    function closeModal() {
+      modalBackdrop.style.display = "none";
+      editingIndex = null;
+    }
+    modalClose.addEventListener('click', closeModal);
+    modalCancel.addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    modalSave.addEventListener('click', () => {
+      if (editingIndex === null) return closeModal();
+      const f = currentFields()[editingIndex];
+      const meta = currentMeta()[editingIndex];
+      meta.display = displayInput.value.trim() || f.label;
+      meta.key = keyInput.value.trim() || f.key;
+      meta.description = descInput.value.trim();
+      if (f.type === "Option") {
+        meta.options = optionsInput.value
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+        meta.allowMultiple = multiInput.checked;
+      }
+      meta.required = requiredInput.checked;
+      meta.pattern = patternInput.value.trim();
+      meta.defaultValue = defaultInput.value;
+
+      // sync display/key back to field for rendering
+      f.label = meta.display;
+      f.key = meta.key;
+      f.meta = meta.description;
+      renderFields();
+      closeModal();
+    });
+
+    // Model switcher (left list)
+    const modelItems = document.querySelectorAll('.left-list .item');
+    modelItems.forEach((item) => {
+      const modelId = item.dataset.model;
+      if (!modelId) return;
+      item.addEventListener('click', () => {
+        modelItems.forEach((i) => i.classList.toggle('active', i === item));
+        currentModelId = modelId;
+        renderFields();
+        removePlaceholder();
+      });
+    });
+
+    function renderTemplates() {
+      const container = document.getElementById('templates-cards');
+      if (!container) return;
+      container.innerHTML = "";
+      templateList.forEach((tpl) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3>${tpl.label}</h3><span class="badge">Template</span>
+          </div>
+          <div class="muted">#${tpl.key}</div>
+          <div class="row" style="justify-content:flex-start;">
+            <button class="btn primary" data-id="${tpl.id}">Apply</button>
+            <button class="btn" data-id="${tpl.id}">Preview</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    renderFields();
+    renderPalette();
+    renderTemplates();
+  </script>
+</body>
+</html>
