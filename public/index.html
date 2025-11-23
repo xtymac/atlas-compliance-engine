@@ -75,14 +75,32 @@
       background: #fff; color: var(--ink);
     }
     .btn {
-      all: unset; cursor: pointer; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
-      background: var(--surface); font-weight: 600; color: var(--ink);
+      all: unset;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.2;
     }
     .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.icon-btn {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      line-height: 1;
+    }
     .cards { margin-top: 14px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
     .card {
       background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px;
       display: grid; gap: 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+      position: relative;
     }
     .card h3 { margin: 0; font-size: 15px; }
     .muted { color: var(--muted); font-size: 13px; }
@@ -93,6 +111,30 @@
       padding: 4px 8px; background: #e7f0ff; color: #0f4bb8; border-radius: 999px;
       font-size: 11px; font-weight: 700;
     }
+    .dropdown { position: relative; }
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+      min-width: 200px;
+      display: none;
+      z-index: 10;
+    }
+    .dropdown-menu.active { display: block; }
+    .dropdown-menu button {
+      all: unset;
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      cursor: pointer;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .dropdown-menu button:hover { background: #f3f4f6; }
     /* Schema page */
     main.schema { background: var(--surface); }
     .schema-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -107,6 +149,8 @@
     .section-title { font-weight: 700; font-size: 12px; color: #6b7280; margin: 12px 0 8px; }
     .item { padding: 9px 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .item.active { background: #e6f0ff; color: #0f4bb8; }
+    .group-row { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin: 6px 0; background: #fff; }
+    .group-row .muted { font-size: 12px; }
     .field-list {
       border: 1px solid var(--border); border-radius: 12px; background: #fff; box-shadow: var(--shadow);
       min-height: 400px; padding: 10px;
@@ -123,6 +167,17 @@
       cursor: pointer;
     }
     .field-card.drop-target { border-color: #2563eb; background: #f0f7ff; }
+    .field-badges { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .badge.required {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .badge.validation {
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+    }
     .field-placeholder {
       border: 1px dashed #2563eb;
       border-radius: 10px;
@@ -130,6 +185,49 @@
       margin: 8px 0;
       background: #f8fbff;
       transition: all 140ms ease;
+    }
+    /* Content page */
+    .content-layout { display: grid; grid-template-columns: 220px 1fr; gap: 16px; }
+    .content-sidebar {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fdfdfd;
+      padding: 12px;
+    }
+    .content-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .content-table th, .content-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+      font-size: 13px;
+    }
+    .content-table tr:last-child td { border-bottom: none; }
+    .status-dot { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot.published { background: #16a34a; }
+    .dot.draft { background: #f59e0b; }
+    .chip { display: inline-block; padding: 4px 8px; border-radius: 999px; background: #f3f4f6; font-size: 12px; }
+    .cell-editable { background: #fff; }
+    .inline-input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 6px 8px;
+      background: #fff;
+      font: inherit;
+      font-size: 13px;
+    }
+    .inline-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.15);
     }
     /* Modal */
     .modal-backdrop {
@@ -223,7 +321,7 @@
         <button data-view="templates">🧭 Templates</button>
         <button class="active" data-view="models">📦 Models</button>
         <button data-view="schema">🧩 Schema</button>
-        <button>🗂️ Content</button>
+        <button data-view="content">🗂️ Content</button>
         <button>🗄️ Asset</button>
         <button>📨 Request</button>
       </div>
@@ -242,7 +340,13 @@
             <option>Sort by name</option>
             <option>Sort by createdAt</option>
           </select>
-          <button class="btn primary">+ New Model</button>
+          <div class="dropdown">
+            <button id="new-model-btn" class="btn primary">+ New Model</button>
+            <div id="new-model-menu" class="dropdown-menu">
+              <button data-action="blank">空白のモデルを作成</button>
+              <button data-action="template">標準テンプレートから作成</button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="cards">
@@ -290,21 +394,14 @@
         </div>
 
         <div class="layout">
-          <div class="left-list">
+        <div class="left-list">
             <div class="section-title">MODELS <span style="float:right; color:#2563eb; cursor:pointer;">+ Add</span></div>
-            <div class="item active" data-model="public-facilities">公共施設一覧</div>
-            <div class="item" data-model="childcare-facilities">子育て施設一覧</div>
-            <div class="section-title">GROUPS <span style="float:right; color:#2563eb; cursor:pointer;">+ Add</span></div>
-            <div class="item">名称 (Name)</div>
-            <div class="item">外部識別子</div>
-            <div class="item">所在地 (Address)</div>
-            <div class="item">連絡先 (Contact)</div>
-            <div class="item">利用可能時間</div>
-            <div class="item">画像 (Media)</div>
+            <div id="model-list"></div>
+            <div class="section-title">GROUPS</div>
+            <div id="group-list"></div>
           </div>
 
           <div>
-            <div class="drop-hint">右側のフィールドをドラッグしてここにドロップ</div>
             <div id="field-list" class="field-list"></div>
           </div>
           <div class="palette">
@@ -323,6 +420,33 @@
         </div>
       </div>
       <div class="cards" id="templates-cards"></div>
+    </div>
+
+    <div id="content-view" class="workspace hidden">
+      <div class="header-row">
+        <div>
+          <h2>Content</h2>
+          <p id="content-model-label">Select a model to view items</p>
+        </div>
+        <button id="new-item-btn" class="btn primary">+ New Item</button>
+      </div>
+      <div class="content-layout">
+        <div class="content-sidebar">
+          <div class="section-title">MODELS</div>
+          <div id="content-model-list"></div>
+        </div>
+        <div>
+          <div class="row" style="gap:8px; margin-bottom:8px;">
+            <input id="content-search" class="input" placeholder="search text" style="max-width:220px;">
+          </div>
+          <div style="overflow:auto; border-radius:12px;">
+            <table class="content-table" id="content-table">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -383,30 +507,122 @@
     </div>
   </div>
 
+  <!-- Template Selection Modal -->
+  <div id="template-modal-backdrop" class="modal-backdrop">
+    <div class="modal" style="max-width: 860px;">
+      <div class="modal-header">
+        <div>
+          <div class="muted" style="font-size:12px;">標準モデルテンプレートの選択</div>
+          <h3 style="margin:0;">Templates</h3>
+        </div>
+        <button id="template-modal-close" class="btn">✕</button>
+      </div>
+      <div class="row" style="gap:8px;">
+        <input id="template-search" placeholder="検索 (例: AED, 公共施設, イベント)" style="flex:1;">
+        <select id="template-filter" style="width:180px;">
+          <option value="all">すべて</option>
+          <option value="facility">施設</option>
+          <option value="event">イベント</option>
+          <option value="emergency">防災</option>
+        </select>
+      </div>
+      <div id="template-modal-cards" class="cards" style="margin-top:12px; max-height:60vh; overflow:auto;"></div>
+      <div class="modal-actions">
+        <button id="template-modal-cancel" class="btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Template Edit Modal -->
+  <div id="template-edit-backdrop" class="modal-backdrop">
+    <div class="modal" style="max-width: 540px;">
+      <div class="modal-header">
+        <div>
+          <div class="muted" style="font-size:12px;">テンプレートを編集</div>
+          <h3 id="template-edit-title" style="margin:0;">Template</h3>
+        </div>
+        <button id="template-edit-close" class="btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <label>名称</label>
+          <input id="tpl-edit-label" placeholder="公共施設一覧">
+        </div>
+        <div class="modal-section">
+          <label>Model Key</label>
+          <input id="tpl-edit-key" placeholder="public_facility">
+        </div>
+        <div class="modal-section">
+          <label>バージョン</label>
+          <input id="tpl-edit-version" placeholder="v3.0">
+        </div>
+        <div class="modal-section">
+          <label>分類</label>
+          <input id="tpl-edit-category" placeholder="facility / emergency / event">
+        </div>
+        <div class="modal-section">
+          <label>概要</label>
+          <textarea id="tpl-edit-summary" placeholder="概要を入力"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="tpl-edit-cancel" class="btn">Cancel</button>
+        <button id="tpl-edit-save" class="btn primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Modal -->
+  <div id="item-modal-backdrop" class="modal-backdrop">
+    <div class="modal" style="max-width: 700px;">
+      <div class="modal-header">
+        <div>
+          <div class="muted" style="font-size:12px;">New Item</div>
+          <h3 id="item-modal-title" style="margin:0;">Item</h3>
+        </div>
+        <button id="item-modal-close" class="btn">✕</button>
+      </div>
+      <div id="item-form" class="modal-body" style="max-height: 60vh; overflow:auto;"></div>
+      <div class="modal-actions">
+        <button id="item-modal-cancel" class="btn">Cancel</button>
+        <button id="item-modal-save" class="btn primary">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // View switcher
+    // View switcher with persistence
     const navButtons = document.querySelectorAll('.nav-list button[data-view]');
     const crumbTitle = document.getElementById('crumb-title');
     const modelsView = document.getElementById('models-view');
     const schemaWrapper = document.getElementById('schema-wrapper');
     const templatesView = document.getElementById('templates-view');
+    const contentView = document.getElementById('content-view');
+
+    function switchView(target) {
+      const viewMap = {
+        models: modelsView,
+        schema: schemaWrapper,
+        templates: templatesView,
+        content: contentView,
+      };
+      Object.values(viewMap).forEach((el) => el.classList.add('hidden'));
+      if (viewMap[target]) viewMap[target].classList.remove('hidden');
+      navButtons.forEach((b) => b.classList.toggle('active', b.dataset.view === target));
+      crumbTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+      try {
+        localStorage.setItem('ace_last_view', target);
+      } catch (_) {}
+      if (target === 'content') {
+        renderContentModelList();
+        renderContentTable();
+      }
+    }
 
     navButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
         const target = btn.dataset.view;
-        modelsView.classList.add('hidden');
-        schemaWrapper.classList.add('hidden');
-        templatesView.classList.add('hidden');
-        if (target === 'schema') {
-          schemaWrapper.classList.remove('hidden');
-        } else if (target === 'templates') {
-          templatesView.classList.remove('hidden');
-        } else {
-          modelsView.classList.remove('hidden');
-        }
-        crumbTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+        switchView(target);
       });
     });
 
@@ -470,13 +686,14 @@
         meta: initialFields.map((f) => ({
           display: f.label,
           key: f.key,
-          description: f.meta || "",
-          required: false,
+          description: "",
+          required: ["localGovernmentCode","identifier","name","address","latitudeLongitude","datasetUpdatedAt"].includes(f.key),
           options: [],
           allowMultiple: false,
           pattern: f.meta && f.meta.includes("6桁") ? "^[0-9]{6}$" : "",
           defaultValue: ""
-        }))
+        })),
+        groups: ["基本情報", "所在地 (Address)", "連絡先", "位置情報", "更新情報"]
       },
       "childcare-facilities": {
         label: "子育て施設一覧",
@@ -484,20 +701,59 @@
         meta: childcareFields.map((f) => ({
           display: f.label,
           key: f.key,
-          description: f.meta || "",
-          required: false,
+          description: "",
+          required: ["localGovernmentCode","identifier","facilityName","facilityCategory","address","latitudeLongitude","datasetUpdatedAt"].includes(f.key),
           options: f.type === "Option" && f.meta ? f.meta.split(",") : [],
           allowMultiple: false,
           pattern: f.meta && f.meta.includes("6桁") ? "^[0-9]{6}$" : "",
           defaultValue: ""
-        }))
+        })),
+        groups: ["基本情報", "所在地 (Address)", "サービス", "時間", "メディア"]
+      },
+      "aed-locations": {
+        label: "AED設置箇所一覧",
+        fields: [
+          { label: "全国地方公共団体コード", key: "localGovernmentCode", type: "Text", meta: "半角数字6桁" },
+          { label: "ID", key: "identifier", type: "Text", meta: "半角英数字" },
+          { label: "設置場所名称", key: "name", type: "Text" },
+          { label: "設置場所詳細", key: "installationPlace", type: "Text" },
+          { label: "小児対応設備の有無", key: "pediatricSupport", type: "Option", meta: "yes,no" },
+          { label: "所在地 (Address)", key: "address", type: "Text" },
+          { label: "問い合わせ先電話番号", key: "contactPhone", type: "Text" },
+          { label: "緯度 / 経度", key: "latitudeLongitude", type: "Coordinate", meta: "GIF bounds -90/90 -180/180" },
+          { label: "データセット最終更新日", key: "datasetUpdatedAt", type: "Date" }
+        ],
+        meta: [
+          { display: "全国地方公共団体コード", key: "localGovernmentCode", description: "", required: true, options: [], allowMultiple: false, pattern: "^[0-9]{6}$", defaultValue: "" },
+          { display: "ID", key: "identifier", description: "", required: true, options: [], allowMultiple: false, pattern: "^[A-Za-z0-9_-]+$", defaultValue: "" },
+          { display: "設置場所名称", key: "name", description: "", required: true, options: [], allowMultiple: false, pattern: "", defaultValue: "" },
+          { display: "設置場所詳細", key: "installationPlace", description: "", required: true, options: [], allowMultiple: false, pattern: "", defaultValue: "" },
+          { display: "小児対応設備の有無", key: "pediatricSupport", description: "", required: true, options: ["yes","no"], allowMultiple: false, pattern: "", defaultValue: "" },
+          { display: "所在地 (Address)", key: "address", description: "", required: true, options: [], allowMultiple: false, pattern: "", defaultValue: "" },
+          { display: "問い合わせ先電話番号", key: "contactPhone", description: "", required: false, options: [], allowMultiple: false, pattern: "", defaultValue: "" },
+          { display: "緯度 / 経度", key: "latitudeLongitude", description: "", required: true, options: [], allowMultiple: false, pattern: "", defaultValue: "" },
+          { display: "データセット最終更新日", key: "datasetUpdatedAt", description: "", required: true, options: [], allowMultiple: false, pattern: "", defaultValue: "" }
+        ],
+        groups: ["基本情報", "所在地 (Address)", "設備", "位置情報", "更新情報"]
       }
     };
     const templateList = [
-      { id: "public-facilities", label: "公共施設一覧", key: "public_facility" },
-      { id: "aed-locations", label: "AED設置箇所一覧", key: "aed_location" },
-      { id: "childcare-facilities", label: "子育て施設一覧", key: "childcare_facility" }
+      { id: "public-facilities", label: "公共施設一覧", key: "public_facility", version: "v3.0", category: "facility", summary: "地方公共団体が管理する公共施設の詳細データ" },
+      { id: "aed-locations", label: "AED設置箇所一覧", key: "aed_location", version: "v2.1", category: "emergency", summary: "AED設置場所と対応可否を含む緊急医療データ" },
+      { id: "childcare-facilities", label: "子育て施設一覧", key: "childcare_facility", version: "v1.4", category: "facility", summary: "保育・幼稚園・学童施設の一覧と設備情報" }
     ];
+    const contentStore = {
+      "public-facilities": [
+        { status: "Published", localGovernmentCode: "352080", identifier: "1200005", name: "中央図書館", address: "山口県岩国市", latitudeLongitude: "34.1, 132.2" },
+        { status: "Draft", localGovernmentCode: "352080", identifier: "1200006", name: "市民プール", address: "山口県岩国市", latitudeLongitude: "34.2, 132.3" }
+      ],
+      "aed-locations": [
+        { status: "Published", localGovernmentCode: "131016", identifier: "aed-01", name: "市役所 1F", address: "東京都新宿区", pediatricSupport: "yes", latitudeLongitude: "35.6, 139.7" }
+      ],
+      "childcare-facilities": [
+        { status: "Published", localGovernmentCode: "131016", identifier: "cc-01", facilityName: "さくら保育園", address: "東京都杉並区", facilityCategory: "保育所", latitudeLongitude: "35.7, 139.6" }
+      ]
+    };
 
     let currentModelId = "public-facilities";
 
@@ -506,6 +762,9 @@
     }
     function currentMeta() {
       return modelStore[currentModelId].meta;
+    }
+    function currentGroups() {
+      return modelStore[currentModelId].groups || [];
     }
     const placeholder = document.createElement('div');
     placeholder.className = 'field-placeholder';
@@ -559,7 +818,7 @@
       currentMeta().splice(index, 0, {
         display: item.label,
         key,
-        description: item.desc || "",
+        description: "",
         required: false,
         options: [],
         allowMultiple: false,
@@ -589,6 +848,11 @@
             <span>#${f.key}</span>
             ${f.meta ? `<span>• ${f.meta}</span>` : ""}
           </div>
+          <div class="field-badges">
+            <span class="field-type">${f.type}</span>
+            ${currentMeta()[idx].required ? '<span class="badge required">◎ Required</span>' : ""}
+            ${currentMeta()[idx].pattern ? `<span class="badge validation">Pattern: ${currentMeta()[idx].pattern}</span>` : ""}
+          </div>
         `;
         card.addEventListener('click', () => openModal(idx));
         card.addEventListener('dragover', (e) => {
@@ -610,6 +874,52 @@
           addField(item, insertIdx);
         });
         fieldListEl.appendChild(card);
+      });
+    }
+
+    function renderModelList() {
+      const container = document.getElementById('model-list');
+      if (!container) return;
+      container.innerHTML = "";
+      Object.keys(modelStore).forEach((id) => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        if (id === currentModelId) item.classList.add('active');
+        item.dataset.model = id;
+        item.textContent = modelStore[id].label;
+        item.addEventListener('click', () => {
+          currentModelId = id;
+          renderModelList();
+          renderGroups();
+          renderFields();
+          removePlaceholder();
+        });
+        container.appendChild(item);
+      });
+    }
+
+    function renderGroups() {
+      const container = document.getElementById('group-list');
+      if (!container) return;
+      container.innerHTML = "";
+      const groups = currentGroups();
+      if (groups.length === 0) return;
+      const groupMeta = [
+        { name: "基本情報 / 識別子", key: "Core / ID", examples: "全国地方公共団体コード、名称、名称_カナ" },
+        { name: "所在地 / GIS情報", key: "Location", examples: "所在地_連結表記、緯度、経度" },
+        { name: "利用可能日時", key: "Schedule", examples: "利用可能曜日、開始時間、終了時間" },
+        { name: "アクセシビリティ", key: "Accessibility", examples: "車椅子可、授乳室、おむつ替えコーナー" },
+        { name: "参照 / メディア", key: "Media", examples: "URL、画像、画像_ライセンス" }
+      ];
+      (groupMeta.length ? groupMeta : groups.map((g) => ({ name: g, key: "", examples: "" }))).forEach((g) => {
+        const row = document.createElement('div');
+        row.className = 'group-row';
+        row.innerHTML = `
+          <div style="font-weight:600;">${g.name}</div>
+          <div class="muted">${g.key || ""}</div>
+          <div class="muted">${g.examples || ""}</div>
+        `;
+        container.appendChild(row);
       });
     }
 
@@ -662,9 +972,6 @@
         addField(item, idx); // drop at placeholder or calculated position
       });
     }
-
-    renderFields();
-    renderPalette();
   </script>
   <script>
     const modalBackdrop = document.getElementById('modal-backdrop');
@@ -753,18 +1060,31 @@
       closeModal();
     });
 
-    // Model switcher (left list)
-    const modelItems = document.querySelectorAll('.left-list .item');
-    modelItems.forEach((item) => {
-      const modelId = item.dataset.model;
-      if (!modelId) return;
-      item.addEventListener('click', () => {
-        modelItems.forEach((i) => i.classList.toggle('active', i === item));
-        currentModelId = modelId;
-        renderFields();
-        removePlaceholder();
-      });
-    });
+    function ensureModelFromTemplate(tplId) {
+      if (modelStore[tplId]) return;
+      const tpl = templateList.find((t) => t.id === tplId);
+      if (!tpl) return;
+      const baseFields = tpl.id === "aed-locations" ? modelStore["aed-locations"].fields : tpl.id === "childcare-facilities" ? modelStore["childcare-facilities"].fields : modelStore["public-facilities"].fields;
+      const baseMeta = tpl.id === "aed-locations" ? modelStore["aed-locations"].meta : tpl.id === "childcare-facilities" ? modelStore["childcare-facilities"].meta : modelStore["public-facilities"].meta;
+      modelStore[tplId] = {
+        label: tpl.label,
+        fields: JSON.parse(JSON.stringify(baseFields)),
+        meta: JSON.parse(JSON.stringify(baseMeta)),
+        groups: tpl.id === "aed-locations" ? modelStore["aed-locations"].groups : tpl.id === "childcare-facilities" ? modelStore["childcare-facilities"].groups : modelStore["public-facilities"].groups
+      };
+    }
+
+    function applyTemplate(tplId) {
+      ensureModelFromTemplate(tplId);
+      currentModelId = tplId;
+      renderModelList();
+      renderGroups();
+      renderFields();
+      removePlaceholder();
+      // Switch to Schema view
+      switchView('schema');
+      closeTemplateModal();
+    }
 
     function renderTemplates() {
       const container = document.getElementById('templates-cards');
@@ -777,19 +1097,440 @@
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <h3>${tpl.label}</h3><span class="badge">Template</span>
           </div>
-          <div class="muted">#${tpl.key}</div>
-          <div class="row" style="justify-content:flex-start;">
-            <button class="btn primary" data-id="${tpl.id}">Apply</button>
-            <button class="btn" data-id="${tpl.id}">Preview</button>
+          <div class="muted">#${tpl.key} • ${tpl.version || ""}</div>
+          <div class="muted">${tpl.summary || ""}</div>
+          <div class="row" style="justify-content:flex-start; align-items:center; gap:6px;">
+            <button class="btn primary" data-action="apply-template" data-id="${tpl.id}">Use Template</button>
+          </div>
+          <div style="position:absolute; right:10px; bottom:10px;">
+            <div class="dropdown menu-wrap">
+              <button class="btn icon-btn tpl-menu-btn" data-id="${tpl.id}">⋯</button>
+              <div class="dropdown-menu tpl-menu" data-id="${tpl.id}">
+                <button data-action="preview-template" data-id="${tpl.id}">Preview</button>
+                <button data-action="edit-template" data-id="${tpl.id}">Edit</button>
+              </div>
+            </div>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
+    // Templates view apply buttons (delegated)
+    document.addEventListener('click', (e) => {
+      if (e.target?.dataset?.action === 'apply-template') {
+        applyTemplate(e.target.dataset.id);
+      }
+    });
+
+    // New Model dropdown
+    const newModelBtn = document.getElementById('new-model-btn');
+    const newModelMenu = document.getElementById('new-model-menu');
+    newModelBtn?.addEventListener('click', () => {
+      newModelMenu.classList.toggle('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (!newModelMenu.contains(e.target) && e.target !== newModelBtn) {
+        newModelMenu.classList.remove('active');
+      }
+    });
+    newModelMenu?.addEventListener('click', (e) => {
+      if (e.target.dataset.action === 'template') {
+        openTemplateModal();
+      }
+      if (e.target.dataset.action === 'blank') {
+        const id = `custom-${Date.now()}`;
+        modelStore[id] = { label: "Custom Model", fields: [], meta: [], groups: ["基本情報"] };
+        currentModelId = id;
+        renderModelList();
+        renderGroups();
+        renderFields();
+        removePlaceholder();
+        switchView('schema');
+      }
+    });
+
+    // Template modal handlers
+    const templateModal = document.getElementById('template-modal-backdrop');
+    const templateModalCards = document.getElementById('template-modal-cards');
+    const templateSearch = document.getElementById('template-search');
+    const templateFilter = document.getElementById('template-filter');
+    document.getElementById('template-modal-close').addEventListener('click', closeTemplateModal);
+    document.getElementById('template-modal-cancel').addEventListener('click', closeTemplateModal);
+
+    // Template edit modal
+    const tplEditBackdrop = document.getElementById('template-edit-backdrop');
+    const tplEditTitle = document.getElementById('template-edit-title');
+    const tplEditLabel = document.getElementById('tpl-edit-label');
+    const tplEditKey = document.getElementById('tpl-edit-key');
+    const tplEditVersion = document.getElementById('tpl-edit-version');
+    const tplEditCategory = document.getElementById('tpl-edit-category');
+    const tplEditSummary = document.getElementById('tpl-edit-summary');
+    const tplEditSave = document.getElementById('tpl-edit-save');
+    const tplEditClose = document.getElementById('template-edit-close');
+    const tplEditCancel = document.getElementById('tpl-edit-cancel');
+    let editingTemplateId = null;
+
+    function renderTemplateModalCards() {
+      const query = (templateSearch?.value || "").toLowerCase();
+      const filter = templateFilter?.value || "all";
+      templateModalCards.innerHTML = "";
+      templateList
+        .filter((tpl) => {
+          const matchText = tpl.label.toLowerCase().includes(query) || tpl.key.toLowerCase().includes(query) || (tpl.summary || "").toLowerCase().includes(query);
+          const matchCat = filter === "all" || tpl.category === filter;
+          return matchText && matchCat;
+        })
+        .forEach((tpl) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h3>${tpl.label}</h3><span class="badge">Template</span>
+            </div>
+            <div class="muted">#${tpl.key} • ${tpl.version || ""} • ${tpl.category || ""}</div>
+            <div class="muted">${tpl.summary || ""}</div>
+            <div class="row" style="justify-content:flex-start; align-items:center; gap:6px;">
+              <button class="btn primary" data-action="apply-template" data-id="${tpl.id}">Use Template</button>
+            </div>
+            <div style="position:absolute; right:10px; bottom:10px;">
+              <div class="dropdown menu-wrap">
+                <button class="btn icon-btn tpl-menu-btn" data-id="${tpl.id}">⋯</button>
+                <div class="dropdown-menu tpl-menu" data-id="${tpl.id}">
+                  <button data-action="preview-template" data-id="${tpl.id}">Preview</button>
+                  <button data-action="edit-template" data-id="${tpl.id}">Edit</button>
+                </div>
+              </div>
+            </div>
+          `;
+          templateModalCards.appendChild(card);
+        });
+    }
+    function openTemplateModal() {
+      renderTemplateModalCards();
+      templateModal.style.display = "flex";
+    }
+    function closeTemplateModal() {
+      templateModal.style.display = "none";
+    }
+    templateSearch?.addEventListener('input', renderTemplateModalCards);
+    templateFilter?.addEventListener('change', renderTemplateModalCards);
+    templateModal.addEventListener('click', (e) => {
+      if (e.target === templateModal) closeTemplateModal();
+    });
+
+    function openTemplateEditModal(tplId) {
+      const tpl = templateList.find((t) => t.id === tplId);
+      if (!tpl) return;
+      editingTemplateId = tplId;
+      tplEditTitle.textContent = tpl.label;
+      tplEditLabel.value = tpl.label;
+      tplEditKey.value = tpl.key;
+      tplEditVersion.value = tpl.version || "";
+      tplEditCategory.value = tpl.category || "";
+      tplEditSummary.value = tpl.summary || "";
+      tplEditBackdrop.style.display = "flex";
+    }
+    function closeTemplateEditModal() {
+      tplEditBackdrop.style.display = "none";
+      editingTemplateId = null;
+    }
+    tplEditClose.addEventListener('click', closeTemplateEditModal);
+    tplEditCancel.addEventListener('click', closeTemplateEditModal);
+    tplEditBackdrop.addEventListener('click', (e) => {
+      if (e.target === tplEditBackdrop) closeTemplateEditModal();
+    });
+    tplEditSave.addEventListener('click', () => {
+      if (!editingTemplateId) return closeTemplateEditModal();
+      const tpl = templateList.find((t) => t.id === editingTemplateId);
+      if (!tpl) return closeTemplateEditModal();
+      tpl.label = tplEditLabel.value.trim() || tpl.label;
+      tpl.key = tplEditKey.value.trim() || tpl.key;
+      tpl.version = tplEditVersion.value.trim();
+      tpl.category = tplEditCategory.value.trim() || tpl.category;
+      tpl.summary = tplEditSummary.value.trim();
+      renderTemplates();
+      renderTemplateModalCards();
+      renderModelList();
+      closeTemplateEditModal();
+    });
+    // delegated template menu (apply/preview/edit)
+    document.addEventListener('click', (e) => {
+      const menuBtn = e.target.closest('.tpl-menu-btn');
+      if (menuBtn) {
+        e.stopPropagation();
+        const id = menuBtn.dataset.id;
+        closeAllTplMenus();
+        toggleTplMenu(id);
+        return;
+      }
+      if (e.target?.dataset?.action === 'edit-template') {
+        openTemplateEditModal(e.target.dataset.id);
+        closeAllTplMenus();
+        return;
+      }
+      if (e.target?.dataset?.action === 'preview-template') {
+        alert(`Preview for ${e.target.dataset.id} (stub)`);
+        closeAllTplMenus();
+        return;
+      }
+      if (e.target?.dataset?.action === 'apply-template') {
+        applyTemplate(e.target.dataset.id);
+        closeAllTplMenus();
+        return;
+      }
+      // click outside menus
+      if (!e.target.closest('.tpl-menu')) {
+        closeAllTplMenus();
+      }
+    });
+
+    // Content view
+    const contentModelList = document.getElementById('content-model-list');
+    const contentTable = document.getElementById('content-table');
+    const contentSearch = document.getElementById('content-search');
+    const contentModelLabel = document.getElementById('content-model-label');
+    const newItemBtn = document.getElementById('new-item-btn');
+    const itemModal = document.getElementById('item-modal-backdrop');
+    const itemForm = document.getElementById('item-form');
+    const itemModalClose = document.getElementById('item-modal-close');
+    const itemModalCancel = document.getElementById('item-modal-cancel');
+    const itemModalSave = document.getElementById('item-modal-save');
+    const itemModalTitle = document.getElementById('item-modal-title');
+
+    function renderContentModelList() {
+      if (!contentModelList) return;
+      contentModelList.innerHTML = "";
+      Object.keys(modelStore).forEach((id) => {
+        const row = document.createElement('div');
+        row.className = 'item';
+        if (id === currentModelId) row.classList.add('active');
+        row.textContent = modelStore[id].label;
+        row.addEventListener('click', () => {
+          currentModelId = id;
+          renderContentModelList();
+          renderContentTable();
+          renderModelList();
+          renderGroups();
+        });
+        contentModelList.appendChild(row);
+      });
+    }
+
+    function renderContentTable() {
+      if (!contentTable) return;
+      const thead = contentTable.querySelector('thead');
+      const tbody = contentTable.querySelector('tbody');
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+      const fields = currentFields().slice(0, 6); // show first few columns
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = `<th>Status</th>${fields.map((f) => `<th>${f.label}</th>`).join("")}<th></th>`;
+      thead.appendChild(headerRow);
+
+      const items = (contentStore[currentModelId] || []).filter((item) => {
+        const q = (contentSearch?.value || "").toLowerCase();
+        if (!q) return true;
+        return Object.values(item).some((v) => (v || "").toString().toLowerCase().includes(q));
+      });
+
+      items.forEach((item, rowIdx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="status-dot"><span class="dot ${item.status === "Published" ? "published" : "draft"}"></span>
+            <select class="inline-input" data-row="${rowIdx}" data-key="status">
+              <option value="Published" ${item.status === "Published" ? "selected" : ""}>Published</option>
+              <option value="Draft" ${item.status !== "Published" ? "selected" : ""}>Draft</option>
+            </select>
+          </span></td>
+          ${fields.map((f) => `<td class="cell-editable"><input class="inline-input" data-row="${rowIdx}" data-key="${f.key}" value="${item[f.key] || ""}"></td>`).join("")}
+          <td><button class="btn" data-action="delete-row" data-row="${rowIdx}">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const tplKey = (templateList.find((t)=>t.id===currentModelId)?.key) || currentModelId;
+      contentModelLabel.textContent = `${modelStore[currentModelId].label} / #${tplKey}`;
+    }
+
+    function openItemModal() {
+      itemForm.innerHTML = "";
+      itemModalTitle.textContent = modelStore[currentModelId].label;
+      currentFields().forEach((f, idx) => {
+        const meta = currentMeta()[idx];
+        const wrapper = document.createElement('div');
+        wrapper.className = 'modal-section';
+        wrapper.innerHTML = `
+          <label>${meta.display || f.label} ${meta.required ? '<span class="badge required">◎</span>' : ''}</label>
+          ${renderInputForField(f, meta)}
+        `;
+        itemForm.appendChild(wrapper);
+      });
+      itemModal.style.display = "flex";
+    }
+
+    function renderInputForField(f, meta) {
+      if (f.type === "Option" && meta.options?.length) {
+        return `
+          <select class="input" data-key="${meta.key}">
+            <option value="">選択してください</option>
+            ${meta.options.map((opt) => `<option value="${opt}">${opt}</option>`).join("")}
+          </select>
+        `;
+      }
+      if (f.type === "Boolean") {
+        return `
+          <select class="input" data-key="${meta.key}">
+            <option value="">選択してください</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        `;
+      }
+      if (f.type === "Date") {
+        return `<input class="input" type="date" data-key="${meta.key}">`;
+      }
+      if (f.type === "Coordinate") {
+        return `
+          <div class="row" style="gap:8px;">
+            <input class="input" type="text" placeholder="lat" data-key="${meta.key}-lat">
+            <input class="input" type="text" placeholder="lng" data-key="${meta.key}-lng">
+          </div>
+        `;
+      }
+      return `<input class="input" type="text" data-key="${meta.key}" placeholder="${meta.pattern ? meta.pattern : ''}">`;
+    }
+
+    function closeItemModal() {
+      itemModal.style.display = "none";
+    }
+    itemModalClose.addEventListener('click', closeItemModal);
+    itemModalCancel.addEventListener('click', closeItemModal);
+    itemModal.addEventListener('click', (e) => {
+      if (e.target === itemModal) closeItemModal();
+    });
+    newItemBtn?.addEventListener('click', openItemModal);
+
+    itemModalSave.addEventListener('click', () => {
+      const inputs = itemForm.querySelectorAll('[data-key]');
+      const record = { status: "Draft" };
+      let valid = true;
+      const errors = [];
+      currentFields().forEach((f, idx) => {
+        const meta = currentMeta()[idx];
+        if (f.type === "Coordinate") {
+          const lat = itemForm.querySelector(`[data-key="${meta.key}-lat"]`)?.value.trim();
+          const lng = itemForm.querySelector(`[data-key="${meta.key}-lng"]`)?.value.trim();
+          if (meta.required && (!lat || !lng)) {
+            valid = false; errors.push(`${meta.display} は必須`);
+          }
+          if (lat && lng) record[meta.key] = `${lat}, ${lng}`;
+          return;
+        }
+        const el = itemForm.querySelector(`[data-key="${meta.key}"]`);
+        if (!el) return;
+        const value = el.value.trim();
+        if (meta.required && !value) {
+          valid = false; errors.push(`${meta.display} は必須`);
+        }
+        if (meta.pattern && value && !(new RegExp(meta.pattern).test(value))) {
+          valid = false; errors.push(`${meta.display} の形式が正しくありません`);
+        }
+        record[meta.key] = value;
+      });
+      if (!valid) {
+        alert(errors.join("\n"));
+        return;
+      }
+      if (!contentStore[currentModelId]) contentStore[currentModelId] = [];
+      contentStore[currentModelId].push(record);
+      renderContentTable();
+      closeItemModal();
+    });
+
+    contentSearch?.addEventListener('input', renderContentTable);
+
+    // Inline edit handlers
+    contentTable?.addEventListener('input', (e) => {
+      const rowIdx = e.target.dataset.row;
+      const key = e.target.dataset.key;
+      if (rowIdx === undefined || !key) return;
+      const record = (contentStore[currentModelId] || [])[rowIdx];
+      if (!record) return;
+      record[key] = e.target.value;
+      sendPatch(currentModelId, contentStore[currentModelId]);
+    });
+    contentTable?.addEventListener('click', (e) => {
+      if (e.target?.dataset?.action === 'delete-row') {
+        const rowIdx = e.target.dataset.row;
+        if (rowIdx === undefined) return;
+        (contentStore[currentModelId] || []).splice(rowIdx, 1);
+        renderContentTable();
+        sendPatch(currentModelId, contentStore[currentModelId]);
+      }
+    });
+
+    function toggleTplMenu(id) {
+      const menu = document.querySelector(`.tpl-menu[data-id="${id}"]`);
+      if (!menu) return;
+      menu.classList.toggle('active');
+    }
+    function closeAllTplMenus() {
+      document.querySelectorAll('.tpl-menu').forEach((m) => m.classList.remove('active'));
+    }
+
+    // WebSocket sync (optional)
+    let ws;
+    function initWS() {
+      try {
+        ws = new WebSocket("ws://localhost:7070");
+      } catch (e) {
+        console.warn("WS not available");
+        return;
+      }
+      ws.addEventListener("open", () => {
+        ws.send(JSON.stringify({ type: "join", modelId: currentModelId }));
+      });
+      ws.addEventListener("message", (evt) => {
+        try {
+          const msg = JSON.parse(evt.data);
+          if (msg.type === "snapshot" && msg.modelId === currentModelId) {
+            contentStore[msg.modelId] = msg.items || [];
+            renderContentTable();
+          }
+          if (msg.type === "patch" && msg.modelId === currentModelId) {
+            contentStore[msg.modelId] = msg.items || [];
+            renderContentTable();
+          }
+        } catch (_) {}
+      });
+      ws.addEventListener("close", () => {
+        setTimeout(initWS, 2000);
+      });
+    }
+    function sendPatch(modelId, items) {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      ws.send(JSON.stringify({ type: "patch", modelId, items }));
+    }
+
+    renderModelList();
+    renderGroups();
     renderFields();
     renderPalette();
     renderTemplates();
+    renderContentModelList();
+    renderContentTable();
+    initWS();
+
+    // Restore last view
+    const lastView = (() => {
+      try {
+        return localStorage.getItem('ace_last_view') || 'models';
+      } catch (_) {
+        return 'models';
+      }
+    })();
+    switchView(lastView);
   </script>
 </body>
 </html>
