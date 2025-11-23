@@ -209,6 +209,7 @@
       font-size: 13px;
     }
     .content-table tr:last-child td { border-bottom: none; }
+    .content-table tr.active-row td { background: #f0f7ff; }
     .status-dot { display: inline-flex; align-items: center; gap: 6px; }
     .dot { width: 8px; height: 8px; border-radius: 50%; }
     .dot.published { background: #16a34a; }
@@ -436,8 +437,18 @@
           <div id="content-model-list"></div>
         </div>
         <div>
-          <div class="row" style="gap:8px; margin-bottom:8px;">
+          <div class="row" style="gap:8px; margin-bottom:8px; align-items:center;">
             <input id="content-search" class="input" placeholder="search text" style="max-width:220px;">
+            <div class="dropdown" style="display:none;" id="content-actions-wrap">
+              <button id="content-actions-btn" class="btn">⋯ Actions</button>
+              <div id="content-actions-menu" class="dropdown-menu" style="min-width:180px;">
+                <button data-action="delete-selected">Delete selected</button>
+                <button data-action="publish-selected">Mark as Published</button>
+                <button data-action="draft-selected">Mark as Draft</button>
+                <button data-action="sort-asc">Sort by first column A→Z</button>
+                <button data-action="sort-desc">Sort by first column Z→A</button>
+              </div>
+            </div>
           </div>
           <div style="overflow:auto; border-radius:12px;">
             <table class="content-table" id="content-table">
@@ -616,6 +627,7 @@
       if (target === 'content') {
         renderContentModelList();
         renderContentTable();
+        updateActionsVisibility();
       }
     }
 
@@ -1289,6 +1301,9 @@
     const contentModelList = document.getElementById('content-model-list');
     const contentTable = document.getElementById('content-table');
     const contentSearch = document.getElementById('content-search');
+    const contentActionsBtn = document.getElementById('content-actions-btn');
+    const contentActionsWrap = document.getElementById('content-actions-wrap');
+    const contentActionsMenu = document.getElementById('content-actions-menu');
     const contentModelLabel = document.getElementById('content-model-label');
     const newItemBtn = document.getElementById('new-item-btn');
     const itemModal = document.getElementById('item-modal-backdrop');
@@ -1325,7 +1340,7 @@
       tbody.innerHTML = "";
       const fields = currentFields().slice(0, 6); // show first few columns
       const headerRow = document.createElement('tr');
-      headerRow.innerHTML = `<th>Status</th>${fields.map((f) => `<th>${f.label}</th>`).join("")}<th></th>`;
+      headerRow.innerHTML = `<th><input type="checkbox" id="content-select-all"></th><th>Status</th>${fields.map((f) => `<th>${f.label}</th>`).join("")}`;
       thead.appendChild(headerRow);
 
       const items = (contentStore[currentModelId] || []).filter((item) => {
@@ -1336,7 +1351,9 @@
 
       items.forEach((item, rowIdx) => {
         const tr = document.createElement('tr');
+        tr.dataset.row = rowIdx;
         tr.innerHTML = `
+          <td><input type="checkbox" class="content-select-row" data-row="${rowIdx}"></td>
           <td><span class="status-dot"><span class="dot ${item.status === "Published" ? "published" : "draft"}"></span>
             <select class="inline-input" data-row="${rowIdx}" data-key="status">
               <option value="Published" ${item.status === "Published" ? "selected" : ""}>Published</option>
@@ -1344,7 +1361,6 @@
             </select>
           </span></td>
           ${fields.map((f) => `<td class="cell-editable"><input class="inline-input" data-row="${rowIdx}" data-key="${f.key}" value="${item[f.key] || ""}"></td>`).join("")}
-          <td><button class="btn" data-action="delete-row" data-row="${rowIdx}">Delete</button></td>
         `;
         tbody.appendChild(tr);
       });
@@ -1410,6 +1426,14 @@
       if (e.target === itemModal) closeItemModal();
     });
     newItemBtn?.addEventListener('click', openItemModal);
+    contentActionsBtn?.addEventListener('click', () => {
+      contentActionsMenu.classList.toggle('active');
+    });
+    document.addEventListener('click', (e) => {
+      if (!contentActionsMenu.contains(e.target) && e.target !== contentActionsBtn) {
+        contentActionsMenu.classList.remove('active');
+      }
+    });
 
     itemModalSave.addEventListener('click', () => {
       const inputs = itemForm.querySelectorAll('[data-key]');
@@ -1445,6 +1469,8 @@
       if (!contentStore[currentModelId]) contentStore[currentModelId] = [];
       contentStore[currentModelId].push(record);
       renderContentTable();
+      sendPatch(currentModelId, contentStore[currentModelId]);
+      updateActionsVisibility();
       closeItemModal();
     });
 
@@ -1459,16 +1485,89 @@
       if (!record) return;
       record[key] = e.target.value;
       sendPatch(currentModelId, contentStore[currentModelId]);
+      highlightRow(rowIdx);
     });
     contentTable?.addEventListener('click', (e) => {
-      if (e.target?.dataset?.action === 'delete-row') {
-        const rowIdx = e.target.dataset.row;
-        if (rowIdx === undefined) return;
-        (contentStore[currentModelId] || []).splice(rowIdx, 1);
-        renderContentTable();
-        sendPatch(currentModelId, contentStore[currentModelId]);
+      if (e.target.classList.contains('content-select-row')) {
+        updateActionsVisibility();
+        if (e.target.checked) {
+          highlightRow(e.target.dataset.row);
+        } else {
+          unhighlightRow(e.target.dataset.row);
+        }
+      }
+      if (e.target.id === 'content-select-all') {
+        updateActionsVisibility();
+        document.querySelectorAll('.content-select-row').forEach((c) => {
+          if (c.checked) highlightRow(c.dataset.row); else unhighlightRow(c.dataset.row);
+        });
       }
     });
+    contentTable?.addEventListener('focusin', (e) => {
+      const rowIdx = e.target.dataset.row;
+      if (rowIdx !== undefined) highlightRow(rowIdx);
+    });
+    contentTable?.addEventListener('focusout', (e) => {
+      const rowIdx = e.target.dataset.row;
+      if (rowIdx === undefined) return;
+      // keep highlight if checkbox still selected
+      const checkbox = contentTable.querySelector(`.content-select-row[data-row="${rowIdx}"]`);
+      if (checkbox && checkbox.checked) return;
+      unhighlightRow(rowIdx);
+    });
+    contentTable?.addEventListener('change', (e) => {
+      if (e.target.id === 'content-select-all') {
+        const checked = e.target.checked;
+        document.querySelectorAll('.content-select-row').forEach((c) => (c.checked = checked));
+        updateActionsVisibility();
+      }
+    });
+
+    contentActionsMenu?.addEventListener('click', (e) => {
+      const action = e.target.dataset.action;
+      if (!action) return;
+      const selected = Array.from(document.querySelectorAll('.content-select-row'))
+        .filter((c) => c.checked)
+        .map((c) => Number(c.dataset.row));
+      const items = contentStore[currentModelId] || [];
+      if (action === 'delete-selected') {
+        contentStore[currentModelId] = items.filter((_, idx) => !selected.includes(idx));
+      }
+      if (action === 'publish-selected') {
+        selected.forEach((idx) => { if (items[idx]) items[idx].status = "Published"; });
+      }
+      if (action === 'draft-selected') {
+        selected.forEach((idx) => { if (items[idx]) items[idx].status = "Draft"; });
+      }
+      if (action === 'sort-asc' || action === 'sort-desc') {
+        const key = currentFields()[0]?.key;
+        if (key) {
+          items.sort((a, b) => {
+            const av = (a[key] || "").toString();
+            const bv = (b[key] || "").toString();
+            return action === 'sort-asc' ? av.localeCompare(bv, "ja") : bv.localeCompare(av, "ja");
+          });
+        }
+      }
+      renderContentTable();
+      sendPatch(currentModelId, contentStore[currentModelId]);
+      contentActionsMenu.classList.remove('active');
+    });
+
+    function updateActionsVisibility() {
+      if (!contentActionsWrap) return;
+      const anySelected = document.querySelector('.content-select-row:checked');
+      contentActionsWrap.style.display = anySelected ? 'inline-block' : 'none';
+    }
+
+    function highlightRow(rowIdx) {
+      const row = contentTable?.querySelector(`tr[data-row="${rowIdx}"]`);
+      if (row) row.classList.add('active-row');
+    }
+    function unhighlightRow(rowIdx) {
+      const row = contentTable?.querySelector(`tr[data-row="${rowIdx}"]`);
+      if (row) row.classList.remove('active-row');
+    }
 
     function toggleTplMenu(id) {
       const menu = document.querySelector(`.tpl-menu[data-id="${id}"]`);
@@ -1521,6 +1620,7 @@
     renderContentModelList();
     renderContentTable();
     initWS();
+    updateActionsVisibility();
 
     // Restore last view
     const lastView = (() => {
