@@ -230,6 +230,10 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.15);
     }
+    .cell-error {
+      border-color: #ef4444 !important;
+      background: #fef2f2;
+    }
     /* Modal */
     .modal-backdrop {
       position: fixed;
@@ -1477,17 +1481,62 @@
     contentSearch?.addEventListener('input', renderContentTable);
 
     // Inline edit handlers
-    contentTable?.addEventListener('input', (e) => {
+    contentTable?.addEventListener('focusin', (e) => {
+      const rowIdx = e.target.dataset.row;
+      const key = e.target.dataset.key;
+      if (rowIdx !== undefined) {
+        highlightRow(rowIdx);
+        e.target.dataset.prev = e.target.value;
+      }
+      if (key) {
+        e.target.classList.remove('cell-error');
+        e.target.title = '';
+      }
+    });
+
+    function validateCell(key, value, meta) {
+      if (key === 'status') return { ok: true };
+      if (meta?.required && !value) return { ok: false, reason: '必須です' };
+      let pattern = meta?.pattern;
+      if (key === 'identifier') pattern = '^\\d+$'; // ID must be digits
+      if (pattern && value && !(new RegExp(pattern).test(value))) {
+        return { ok: false, reason: '形式が正しくありません' };
+      }
+      return { ok: true };
+    }
+
+    function getMetaByKey(key) {
+      const idx = currentMeta().findIndex((m) => m.key === key);
+      return idx >= 0 ? currentMeta()[idx] : null;
+    }
+
+    contentTable?.addEventListener('focusout', (e) => {
       const rowIdx = e.target.dataset.row;
       const key = e.target.dataset.key;
       if (rowIdx === undefined || !key) return;
+      const meta = getMetaByKey(key);
+      const value = e.target.value.trim();
+      const validation = validateCell(key, value, meta);
+      if (!validation.ok) {
+        e.target.classList.add('cell-error');
+        e.target.title = validation.reason || '入力エラー';
+        e.target.value = e.target.dataset.prev || '';
+        return;
+      }
+      e.target.classList.remove('cell-error');
+      e.target.title = '';
       const record = (contentStore[currentModelId] || [])[rowIdx];
       if (!record) return;
-      record[key] = e.target.value;
+      record[key] = value;
       sendPatch(currentModelId, contentStore[currentModelId]);
-      highlightRow(rowIdx);
+      // keep highlight if checkbox or focused; remove if neither
+      const checkbox = contentTable.querySelector(`.content-select-row[data-row="${rowIdx}"]`);
+      if (!(checkbox && checkbox.checked)) {
+        unhighlightRow(rowIdx);
+      }
     });
-    contentTable?.addEventListener('click', (e) => {
+
+    contentTable?.addEventListener('input', (e) => {
       if (e.target.classList.contains('content-select-row')) {
         updateActionsVisibility();
         if (e.target.checked) {
@@ -1502,18 +1551,6 @@
           if (c.checked) highlightRow(c.dataset.row); else unhighlightRow(c.dataset.row);
         });
       }
-    });
-    contentTable?.addEventListener('focusin', (e) => {
-      const rowIdx = e.target.dataset.row;
-      if (rowIdx !== undefined) highlightRow(rowIdx);
-    });
-    contentTable?.addEventListener('focusout', (e) => {
-      const rowIdx = e.target.dataset.row;
-      if (rowIdx === undefined) return;
-      // keep highlight if checkbox still selected
-      const checkbox = contentTable.querySelector(`.content-select-row[data-row="${rowIdx}"]`);
-      if (checkbox && checkbox.checked) return;
-      unhighlightRow(rowIdx);
     });
     contentTable?.addEventListener('change', (e) => {
       if (e.target.id === 'content-select-all') {
