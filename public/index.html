@@ -182,14 +182,28 @@
       font-size: 16px;
       line-height: 1;
     }
+    /* Content Containers */
+    .content-box {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .projects-box {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      position: relative;
+      min-height: 500px;
+    }
     /* Welcome Banner */
     .welcome-banner {
       background: transparent;
-      padding: 0 0 20px 0;
+      padding: 0;
       margin-bottom: 0;
     }
     .welcome-banner h1 {
-      margin: 0 0 6px 0;
+      margin: 0 0 8px 0;
       font-size: 24px;
       font-weight: 700;
       color: var(--ink);
@@ -198,7 +212,7 @@
       margin: 0;
       font-size: 14px;
       color: var(--muted);
-      line-height: 1.4;
+      line-height: 1.5;
     }
     /* Cards */
     .cards { margin-top: 16px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
@@ -233,8 +247,9 @@
       align-items: center;
       justify-content: flex-end;
       gap: 6px;
-      margin-top: 20px;
-      padding: 12px 0;
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
     }
     .pagination-btn {
       min-width: 28px;
@@ -556,74 +571,81 @@
     </aside>
 
     <div id="models-view" class="workspace">
-      <div class="welcome-banner">
-        <h1>Welcome to Re:Earth CMS, Mac Xiang!</h1>
-        <p>Re:Earth CMS is a robust tool for collecting, creating, storing, and managing data, specifically designed for GIS applications.</p>
-      </div>
-
-      <div class="header-row">
-        <h2>Projects</h2>
-        <div class="dropdown" style="margin-left:auto;">
-          <button id="new-model-btn" class="btn primary">+ New Project</button>
-          <div id="new-model-menu" class="dropdown-menu">
-            <button data-action="blank">空白のモデルを作成</button>
-            <button data-action="template">標準テンプレートから作成</button>
-          </div>
+      <div class="content-box">
+        <div class="welcome-banner">
+          <h1>Welcome to Re:Earth CMS, Mac Xiang!</h1>
+          <p>Re:Earth CMS is a robust tool for collecting, creating, storing, and managing data, specifically designed for GIS applications.</p>
         </div>
       </div>
 
-      <div class="header-row" style="margin-top:16px;">
-        <input placeholder="search projects" style="width:200px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
-          <span class="muted">Sort by</span>
-          <select>
-            <option>Last Modified</option>
-            <option>Name A-Z</option>
-            <option>Name Z-A</option>
-            <option>Created date</option>
+      <div class="projects-box">
+        <div class="header-row">
+          <h2>Projects</h2>
+          <div class="dropdown" style="margin-left:auto;">
+            <button id="new-model-btn" class="btn primary">+ New Project</button>
+            <div id="new-model-menu" class="dropdown-menu">
+              <button data-action="blank">空白のモデルを作成</button>
+              <button data-action="template">標準テンプレートから作成</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-row" style="margin-top:16px;">
+          <div style="position:relative;">
+            <input placeholder="search projects" style="width:220px; padding-right:36px;">
+            <span style="position:absolute; right:10px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:14px;">🔍</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+            <span class="muted">Sort by</span>
+            <select>
+              <option>Last Modified</option>
+              <option>Name A-Z</option>
+              <option>Name Z-A</option>
+              <option>Created date</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="card-header">
+              <h3>Open Data</h3>
+              <span class="badge public">Public</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Street Atlas</h3>
+              <span class="badge public">Public</span>
+            </div>
+            <div class="muted">1243</div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>空き家 Empty houses</h3>
+              <span class="badge public">Public</span>
+            </div>
+            <div class="muted">124124124124</div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Imaginary Cities</h3>
+              <span class="badge public">Public</span>
+            </div>
+            <div class="muted">A collection of fictional cities with det...</div>
+          </div>
+        </div>
+
+        <div class="pagination">
+          <button class="pagination-btn" disabled>‹</button>
+          <button class="pagination-btn active">1</button>
+          <button class="pagination-btn">›</button>
+          <select class="pagination-select">
+            <option>10 / page</option>
+            <option>20 / page</option>
+            <option>50 / page</option>
           </select>
         </div>
-      </div>
-
-      <div class="cards">
-        <div class="card">
-          <div class="card-header">
-            <h3>Open Data</h3>
-            <span class="badge public">Public</span>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h3>Street Atlas</h3>
-            <span class="badge public">Public</span>
-          </div>
-          <div class="muted">1243</div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h3>空き家 Empty houses</h3>
-            <span class="badge public">Public</span>
-          </div>
-          <div class="muted">124124124124</div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h3>Imaginary Cities</h3>
-            <span class="badge public">Public</span>
-          </div>
-          <div class="muted">A collection of fictional cities with details lik...</div>
-        </div>
-      </div>
-
-      <div class="pagination">
-        <button class="pagination-btn" disabled>‹</button>
-        <button class="pagination-btn active">1</button>
-        <button class="pagination-btn">›</button>
-        <select class="pagination-select">
-          <option>10 / page</option>
-          <option>20 / page</option>
-          <option>50 / page</option>
-        </select>
       </div>
     </div>
 
