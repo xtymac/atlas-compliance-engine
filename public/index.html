@@ -9,15 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f5f6f8;
+      --bg: #ffffff;
       --surface: #ffffff;
-      --ink: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
+      --ink: #222222;
+      --muted: #8a8f99;
+      --border: #e5e5e5;
       --accent: #1677ff;
       --accent-soft: #e7f0ff;
-      --topbar: #1f1f1f;
-      --shadow: 0 8px 22px rgba(0,0,0,0.06);
+      --topbar: #1f2022;
+      --shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     * { box-sizing: border-box; }
     body {
@@ -28,62 +28,148 @@
       -webkit-font-smoothing: antialiased;
     }
     .topbar {
-      height: 48px;
+      height: 64px;
       background: var(--topbar);
-      color: #f9fafb;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 18px;
+      padding: 0 24px;
       font-weight: 600;
     }
-    .crumb { display: flex; align-items: center; gap: 10px; font-size: 14px; }
-    .user-dot {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: #374151; color: #f9fafb; display: grid; place-items: center;
-      font-weight: 700; font-size: 13px;
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .topbar-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: #f59e0b;
+      border-radius: 4px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 2px;
+      padding: 4px;
+    }
+    .topbar-logo-icon span {
+      background: #fff;
+      border-radius: 1px;
+    }
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #ffffff;
+    }
+    .topbar-user:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .topbar-user-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #374151;
+      display: grid;
+      place-items: center;
+      font-weight: 600;
+      font-size: 11px;
+      color: #ffffff;
+    }
+    .topbar-user-chevron {
+      font-size: 10px;
+      color: #9ca3af;
+    }
+    .topbar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #374151;
+      display: grid;
+      place-items: center;
+      font-weight: 600;
+      font-size: 13px;
+      color: #ffffff;
     }
     .shell {
       display: grid;
-      grid-template-columns: 220px 1fr;
-      min-height: calc(100vh - 48px);
+      grid-template-columns: 200px 1fr;
+      min-height: calc(100vh - 64px);
     }
     aside.nav {
-      background: #f9fafb;
+      background: #ffffff;
       border-right: 1px solid var(--border);
-      padding: 16px 12px;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 16px;
     }
-    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; padding: 10px; border-radius: 8px; }
-    .brand-icon { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #111827, #2563eb); }
-    .nav-list { display: grid; gap: 4px; }
+    .nav-top {
+      padding: 12px 8px;
+      flex: 1;
+    }
+    .nav-bottom {
+      padding: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .nav-list { display: grid; gap: 2px; }
     .nav-list button {
-      all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: 10px; font-weight: 500; color: #374151;
+      all: unset; cursor: pointer; display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 6px; font-weight: 500; font-size: 13px; color: #6b7280;
+      transition: background 120ms ease;
     }
-    .nav-list button.active { background: #e6f0ff; color: #0f4bb8; }
-    .workspace { padding: 16px 18px; }
+    .nav-list button:hover { background: #f3f4f6; }
+    .nav-list button.active { background: #f3f4f6; color: #222; }
+    .nav-list button .nav-icon { width: 16px; text-align: center; filter: grayscale(1); opacity: 0.7; }
+    .nav-collapse-btn {
+      all: unset;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      width: 100%;
+      margin-top: 4px;
+      transition: background 120ms ease;
+    }
+    .nav-collapse-btn:hover { background: #f3f4f6; }
+    .workspace {
+      padding: 32px 24px;
+      background: #f6f6f6;
+    }
     .hidden { display: none !important; }
     /* Models page */
     .header-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-    h2 { margin: 0; font-size: 18px; letter-spacing: -0.01em; }
+    h2 { margin: 0; font-size: 18px; letter-spacing: -0.01em; color: var(--ink); }
     p { margin: 0; color: var(--muted); }
     input, select {
-      font: inherit; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border);
+      font: inherit; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border);
       background: #fff; color: var(--ink);
     }
+    select { border-radius: 6px; }
     .btn {
       all: unset;
       cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 8px;
+      padding: 8px 14px;
+      border-radius: 6px;
       border: 1px solid var(--border);
       background: var(--surface);
-      font-weight: 600;
+      font-weight: 500;
       color: var(--ink);
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.2;
     }
     .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -96,20 +182,96 @@
       font-size: 16px;
       line-height: 1;
     }
-    .cards { margin-top: 14px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-    .card {
-      background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px;
-      display: grid; gap: 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.03);
-      position: relative;
+    /* Welcome Banner */
+    .welcome-banner {
+      background: transparent;
+      padding: 0 0 20px 0;
+      margin-bottom: 0;
     }
-    .card h3 { margin: 0; font-size: 15px; }
-    .muted { color: var(--muted); font-size: 13px; }
+    .welcome-banner h1 {
+      margin: 0 0 6px 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .welcome-banner p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    /* Cards */
+    .cards { margin-top: 16px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 20px;
+      display: grid; gap: 12px; box-shadow: none;
+      position: relative;
+      transition: border-color 120ms ease;
+      cursor: pointer;
+    }
+    .card:hover {
+      border-color: #d0d0d0;
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .card h3 { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); }
+    .muted { color: var(--muted); font-size: 13px; line-height: 1.3; }
     .card footer { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; }
     .icon-row { display: flex; gap: 10px; }
     .icon { width: 16px; height: 16px; border: 1px solid var(--border); border-radius: 4px; display: grid; place-items: center; color: #6b7280; font-size: 11px; }
     .badge {
-      padding: 4px 8px; background: #e7f0ff; color: #0f4bb8; border-radius: 999px;
-      font-size: 11px; font-weight: 700;
+      padding: 3px 8px; background: #fff; color: var(--accent); border-radius: 4px;
+      font-size: 12px; font-weight: 500; border: 1px solid var(--accent);
+    }
+    .badge.public {
+      background: #fff;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 20px;
+      padding: 12px 0;
+    }
+    .pagination-btn {
+      min-width: 28px;
+      height: 28px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 120ms ease;
+    }
+    .pagination-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .pagination-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .pagination-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .pagination-select {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 12px;
+      background: #fff;
+      cursor: pointer;
+      margin-left: 8px;
     }
     .dropdown { position: relative; }
     .dropdown-menu {
@@ -118,9 +280,9 @@
       top: 110%;
       background: #fff;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
-      min-width: 200px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      min-width: 180px;
       display: none;
       z-index: 10;
     }
@@ -194,13 +356,14 @@
       background: #fdfdfd;
       padding: 12px;
     }
+    .content-table-wrap { position: relative; overflow: visible; border-radius: 12px; }
     .content-table {
       width: 100%;
       border-collapse: collapse;
       background: #fff;
       border: 1px solid var(--border);
       border-radius: 12px;
-      overflow: hidden;
+      overflow: visible;
     }
     .content-table th, .content-table td {
       border-bottom: 1px solid var(--border);
@@ -233,6 +396,31 @@
     .cell-error {
       border-color: #ef4444 !important;
       background: #fef2f2;
+    }
+    .cell-error + .tooltip {
+      display: block;
+    }
+    .tooltip {
+      display: none;
+      position: absolute;
+      background: #111827;
+      color: #f9fafb;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-top: 4px;
+      z-index: 40;
+      max-width: 240px;
+      white-space: normal;
+      transform: translateY(4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .cell-updated {
+      animation: flash 1.2s ease;
+    }
+    @keyframes flash {
+      0% { background: #e0f2fe; }
+      100% { background: transparent; }
     }
     /* Modal */
     .modal-backdrop {
@@ -270,6 +458,22 @@
     .pill-switch input { width: 16px; height: 16px; }
     textarea { resize: vertical; min-height: 60px; }
     .field-top { display: flex; align-items: center; justify-content: space-between; }
+    .collapsible {
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
+    .collapsible-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+    .collapsible-body { margin-top: 8px; display: grid; gap: 8px; }
+    .collapsible .chevron { font-size: 12px; color: var(--muted); }
+    /* Quick Entry */
+    .quick-grid { margin-top: 14px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .quick-card { cursor: pointer; border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: #fff; box-shadow: var(--shadow); transition: transform 120ms ease, box-shadow 120ms ease; }
+    .quick-card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,0.08); }
+    .quick-card h3 { margin: 0 0 4px 0; font-size: 15px; }
+    .quick-card .muted { font-size: 13px; }
+    .quick-hint { color: var(--muted); font-size: 13px; margin-top: 6px; }
     .field-meta { display: flex; align-items: center; gap: 10px; color: #6b7280; font-size: 12px; }
     .drag-handle { width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 4px; display: grid; place-items: center; font-size: 11px; color: #6b7280; cursor: grab; }
     .field-type { padding: 2px 6px; border-radius: 999px; background: var(--accent-soft); color: #0f4bb8; font-size: 11px; font-weight: 700; }
@@ -295,95 +499,131 @@
       border: 1px dashed var(--border); border-radius: 10px; margin: 10px 0;
     }
     @media (max-width: 1200px) {
-      .shell { grid-template-columns: 220px 1fr; }
-      .layout { grid-template-columns: 240px 1fr; }
+      .shell { grid-template-columns: 200px 1fr; }
+      .layout { grid-template-columns: 200px 1fr; }
       .palette { display: none; }
     }
     @media (max-width: 900px) {
       .shell { grid-template-columns: 1fr; }
-      aside.nav { flex-direction: row; overflow-x: auto; }
+      aside.nav { flex-direction: row; overflow-x: auto; padding: 8px; }
+      .nav-top, .nav-bottom { display: flex; gap: 8px; padding: 0; border: none; }
+      .nav-collapse-btn { display: none; }
       .layout { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="topbar">
-    <div class="crumb">
-      <span>Re:Earth CMS</span>
-      <span style="opacity:0.7;">/</span>
-      <span id="crumb-title">Models</span>
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+      <span>Re: Earth CMS</span>
     </div>
-    <div class="user-dot">M</div>
+    <div class="topbar-user">
+      <div class="topbar-user-avatar">M</div>
+      <span>Mac Xiang</span>
+      <span class="topbar-user-chevron">▼</span>
+    </div>
+    <div class="topbar-avatar">M</div>
   </div>
 
   <div class="shell">
     <aside class="nav">
-      <div class="brand">
-        <div class="brand-icon"></div>
-        ACE CMS
+      <div class="nav-top">
+        <div class="nav-list">
+          <button class="active" data-view="models"><span class="nav-icon">🏠</span> Home</button>
+          <button data-view="quick"><span class="nav-icon">⚡</span> Quick Entry</button>
+          <button data-view="templates"><span class="nav-icon">🧭</span> Templates</button>
+          <button data-view="schema"><span class="nav-icon">🧩</span> Schema</button>
+          <button data-view="content"><span class="nav-icon">🗂️</span> Content</button>
+        </div>
       </div>
-      <div class="nav-list">
-        <button data-view="templates">🧭 Templates</button>
-        <button class="active" data-view="models">📦 Models</button>
-        <button data-view="schema">🧩 Schema</button>
-        <button data-view="content">🗂️ Content</button>
-        <button>🗄️ Asset</button>
-        <button>📨 Request</button>
+      <div class="nav-bottom">
+        <div class="nav-list">
+          <button><span class="nav-icon">🔗</span> Integrations</button>
+          <button><span class="nav-icon">⚙️</span> My Integrations</button>
+          <button><span class="nav-icon">⚡</span> Settings</button>
+          <button><span class="nav-icon">👤</span> Account Settings</button>
+        </div>
+        <button class="nav-collapse-btn">
+          <span>◀</span>
+        </button>
       </div>
     </aside>
 
     <div id="models-view" class="workspace">
+      <div class="welcome-banner">
+        <h1>Welcome to Re:Earth CMS, Mac Xiang!</h1>
+        <p>Re:Earth CMS is a robust tool for collecting, creating, storing, and managing data, specifically designed for GIS applications.</p>
+      </div>
+
       <div class="header-row">
-        <div>
-          <h2>Models</h2>
-          <p>標準テンプレートとカスタムモデルを管理</p>
-        </div>
-        <div class="header-row" style="margin-left:auto;">
-          <input placeholder="search models" style="width:200px;">
-          <select>
-            <option>Sort by updatedAt</option>
-            <option>Sort by name</option>
-            <option>Sort by createdAt</option>
-          </select>
-          <div class="dropdown">
-            <button id="new-model-btn" class="btn primary">+ New Model</button>
-            <div id="new-model-menu" class="dropdown-menu">
-              <button data-action="blank">空白のモデルを作成</button>
-              <button data-action="template">標準テンプレートから作成</button>
-            </div>
+        <h2>Projects</h2>
+        <div class="dropdown" style="margin-left:auto;">
+          <button id="new-model-btn" class="btn primary">+ New Project</button>
+          <div id="new-model-menu" class="dropdown-menu">
+            <button data-action="blank">空白のモデルを作成</button>
+            <button data-action="template">標準テンプレートから作成</button>
           </div>
         </div>
       </div>
+
+      <div class="header-row" style="margin-top:16px;">
+        <input placeholder="search projects" style="width:200px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+          <span class="muted">Sort by</span>
+          <select>
+            <option>Last Modified</option>
+            <option>Name A-Z</option>
+            <option>Name Z-A</option>
+            <option>Created date</option>
+          </select>
+        </div>
+      </div>
+
       <div class="cards">
         <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <h3>公共施設一覧</h3><span class="badge">Template</span>
+          <div class="card-header">
+            <h3>Open Data</h3>
+            <span class="badge public">Public</span>
           </div>
-          <div class="muted">#public_facility</div>
-          <footer>
-            <div class="icon-row">
-              <div class="icon">≡</div><div class="icon">▦</div><div class="icon">↓</div><div class="icon">⋯</div>
-            </div>
-          </footer>
         </div>
         <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <h3>AED設置箇所一覧</h3><span class="badge">Template</span>
+          <div class="card-header">
+            <h3>Street Atlas</h3>
+            <span class="badge public">Public</span>
           </div>
-          <div class="muted">#aed_location</div>
-          <footer>
-            <div class="icon-row">
-              <div class="icon">≡</div><div class="icon">▦</div><div class="icon">↓</div><div class="icon">⋯</div>
-            </div>
-          </footer>
+          <div class="muted">1243</div>
         </div>
         <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <h3>新規カスタムモデル</h3><span class="badge" style="background:#eef2ff;color:#4338ca;">Custom</span>
+          <div class="card-header">
+            <h3>空き家 Empty houses</h3>
+            <span class="badge public">Public</span>
           </div>
-          <div class="muted">自由にフィールドを定義</div>
-          <button class="btn primary" style="justify-self:start;">Start</button>
+          <div class="muted">124124124124</div>
         </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>Imaginary Cities</h3>
+            <span class="badge public">Public</span>
+          </div>
+          <div class="muted">A collection of fictional cities with details lik...</div>
+        </div>
+      </div>
+
+      <div class="pagination">
+        <button class="pagination-btn" disabled>‹</button>
+        <button class="pagination-btn active">1</button>
+        <button class="pagination-btn">›</button>
+        <select class="pagination-select">
+          <option>10 / page</option>
+          <option>20 / page</option>
+          <option>50 / page</option>
+        </select>
       </div>
     </div>
 
@@ -454,7 +694,7 @@
               </div>
             </div>
           </div>
-          <div style="overflow:auto; border-radius:12px;">
+          <div class="content-table-wrap">
             <table class="content-table" id="content-table">
               <thead></thead>
               <tbody></tbody>
@@ -462,6 +702,17 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div id="quick-view" class="workspace hidden">
+      <div class="header-row">
+        <div>
+          <h2>Quick Entry</h2>
+          <p>よく使うテンプレートを簡易入力で追加</p>
+        </div>
+      </div>
+      <div class="quick-grid" id="quick-cards"></div>
+      <div class="quick-hint">最小入力でドラフトを作成し、Contentで詳細を追記できます。</div>
     </div>
   </div>
 
@@ -605,6 +856,24 @@
     </div>
   </div>
 
+  <!-- Quick Entry Modal -->
+  <div id="quick-modal-backdrop" class="modal-backdrop">
+    <div class="modal" style="max-width: 560px;">
+      <div class="modal-header">
+        <div>
+          <div class="muted" style="font-size:12px;">Quick Entry</div>
+          <h3 id="quick-modal-title" style="margin:0;">Template</h3>
+        </div>
+        <button id="quick-modal-close" class="btn">✕</button>
+      </div>
+      <div id="quick-form" class="modal-body"></div>
+      <div class="modal-actions">
+        <button id="quick-modal-cancel" class="btn">Cancel</button>
+        <button id="quick-modal-save" class="btn primary">Save Draft</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // View switcher with persistence
     const navButtons = document.querySelectorAll('.nav-list button[data-view]');
@@ -612,6 +881,7 @@
     const modelsView = document.getElementById('models-view');
     const schemaWrapper = document.getElementById('schema-wrapper');
     const templatesView = document.getElementById('templates-view');
+    const quickView = document.getElementById('quick-view');
     const contentView = document.getElementById('content-view');
 
     function switchView(target) {
@@ -619,6 +889,7 @@
         models: modelsView,
         schema: schemaWrapper,
         templates: templatesView,
+        quick: quickView,
         content: contentView,
       };
       Object.values(viewMap).forEach((el) => el.classList.add('hidden'));
@@ -632,6 +903,8 @@
         renderContentModelList();
         renderContentTable();
         updateActionsVisibility();
+      } else if (target === 'quick') {
+        renderQuickCards();
       }
     }
 
@@ -650,6 +923,11 @@
       { label: "全国地方公共団体コード", key: "localGovernmentCode", type: "Text", meta: "半角数字6桁" },
       { label: "ID", key: "identifier", type: "Text", meta: "半角英数字" },
       { label: "名称 (Name)", key: "name", type: "Text" },
+      { label: "名称_英字", key: "nameEn", type: "Text" },
+      { label: "名称_通称", key: "nameAlias", type: "Text" },
+      { label: "POIコード", key: "poiCode", type: "Int", meta: "半角数字" },
+      { label: "外部識別子", key: "externalIdentifier", type: "Text" },
+      { label: "外部識別子の値", key: "externalIdentifierValue", type: "Text" },
       { label: "所在地 (Address)", key: "address", type: "Text" },
       { label: "連絡先 (Contact)", key: "contact", type: "Text" },
       { label: "緯度 / 経度", key: "latitudeLongitude", type: "Coordinate", meta: "GIF bounds -90/90 -180/180" },
@@ -704,7 +982,7 @@
           key: f.key,
           description: "",
           required: ["localGovernmentCode","identifier","name","address","latitudeLongitude","datasetUpdatedAt"].includes(f.key),
-          options: [],
+          options: f.type === "Option" && f.meta ? f.meta.split(",") : [],
           allowMultiple: false,
           pattern: f.meta && f.meta.includes("6桁") ? "^[0-9]{6}$" : "",
           defaultValue: ""
@@ -758,10 +1036,46 @@
       { id: "aed-locations", label: "AED設置箇所一覧", key: "aed_location", version: "v2.1", category: "emergency", summary: "AED設置場所と対応可否を含む緊急医療データ" },
       { id: "childcare-facilities", label: "子育て施設一覧", key: "childcare_facility", version: "v1.4", category: "facility", summary: "保育・幼稚園・学童施設の一覧と設備情報" }
     ];
+    const quickTemplates = [
+      {
+        id: "public-facilities",
+        label: "公共施設（かんたん）",
+        description: "名称・ID・所在地をすぐ登録",
+        fields: [
+          { key: "name", label: "施設名", required: true, placeholder: "中央図書館" },
+          { key: "identifier", label: "ID", required: true, placeholder: "半角数字" },
+          { key: "address", label: "所在地", required: true, placeholder: "都道府県 市区町村" },
+          { key: "nameAlias", label: "名称_通称", required: false },
+          { key: "poiCode", label: "POIコード", required: false, type: "number" }
+        ]
+      },
+      {
+        id: "aed-locations",
+        label: "AED設置箇所（かんたん）",
+        description: "設置場所を最小入力で追加",
+        fields: [
+          { key: "name", label: "設置場所名称", required: true, placeholder: "市役所 1F" },
+          { key: "installationPlace", label: "設置場所詳細", required: true, placeholder: "受付前" },
+          { key: "address", label: "所在地", required: true, placeholder: "東京都新宿区..." },
+          { key: "pediatricSupport", label: "小児対応設備の有無", required: false, placeholder: "yes / no" }
+        ]
+      },
+      {
+        id: "childcare-facilities",
+        label: "子育て施設（かんたん）",
+        description: "施設名と種別だけで作成",
+        fields: [
+          { key: "facilityName", label: "施設名", required: true },
+          { key: "facilityCategory", label: "施設種別", required: true, placeholder: "保育所 など" },
+          { key: "address", label: "所在地", required: true },
+          { key: "openingHours", label: "開所時間", required: false, placeholder: "09:00-18:00" }
+        ]
+      }
+    ];
     const contentStore = {
       "public-facilities": [
-        { status: "Published", localGovernmentCode: "352080", identifier: "1200005", name: "中央図書館", address: "山口県岩国市", latitudeLongitude: "34.1, 132.2" },
-        { status: "Draft", localGovernmentCode: "352080", identifier: "1200006", name: "市民プール", address: "山口県岩国市", latitudeLongitude: "34.2, 132.3" }
+        { status: "Published", localGovernmentCode: "352080", identifier: "1200005", name: "中央図書館", nameEn: "Central Library", nameAlias: "中央図書館", poiCode: "1001", externalIdentifier: "lib-central", externalIdentifierValue: "LC-001", address: "山口県岩国市", latitudeLongitude: "34.1, 132.2" },
+        { status: "Draft", localGovernmentCode: "352080", identifier: "1200006", name: "市民プール", nameEn: "City Pool", nameAlias: "市民プール", poiCode: "1002", externalIdentifier: "pool-city", externalIdentifierValue: "PC-002", address: "山口県岩国市", latitudeLongitude: "34.2, 132.3" }
       ],
       "aed-locations": [
         { status: "Published", localGovernmentCode: "131016", identifier: "aed-01", name: "市役所 1F", address: "東京都新宿区", pediatricSupport: "yes", latitudeLongitude: "35.6, 139.7" }
@@ -1302,6 +1616,13 @@
     });
 
     // Content view
+    const quickCards = document.getElementById('quick-cards');
+    const quickModal = document.getElementById('quick-modal-backdrop');
+    const quickForm = document.getElementById('quick-form');
+    const quickModalClose = document.getElementById('quick-modal-close');
+    const quickModalCancel = document.getElementById('quick-modal-cancel');
+    const quickModalSave = document.getElementById('quick-modal-save');
+    const quickModalTitle = document.getElementById('quick-modal-title');
     const contentModelList = document.getElementById('content-model-list');
     const contentTable = document.getElementById('content-table');
     const contentSearch = document.getElementById('content-search');
@@ -1310,12 +1631,129 @@
     const contentActionsMenu = document.getElementById('content-actions-menu');
     const contentModelLabel = document.getElementById('content-model-label');
     const newItemBtn = document.getElementById('new-item-btn');
+    let currentUser = localStorage.getItem('ace_user') || `User-${Math.floor(Math.random()*1000)}`;
     const itemModal = document.getElementById('item-modal-backdrop');
     const itemForm = document.getElementById('item-form');
     const itemModalClose = document.getElementById('item-modal-close');
     const itemModalCancel = document.getElementById('item-modal-cancel');
     const itemModalSave = document.getElementById('item-modal-save');
     const itemModalTitle = document.getElementById('item-modal-title');
+    let currentQuickTemplateId = null;
+
+    function renderQuickCards() {
+      if (!quickCards) return;
+      quickCards.innerHTML = "";
+      quickTemplates.forEach((tpl) => {
+        const card = document.createElement('div');
+        card.className = 'quick-card';
+        card.dataset.id = tpl.id;
+        card.innerHTML = `
+          <h3>${tpl.label}</h3>
+          <div class="muted">${tpl.description}</div>
+        `;
+        card.addEventListener('click', () => openQuickModal(tpl.id));
+        quickCards.appendChild(card);
+      });
+    }
+
+    function openQuickModal(tplId) {
+      const tpl = quickTemplates.find((t) => t.id === tplId);
+      if (!tpl) return;
+      ensureModelFromTemplate(tpl.id);
+      currentQuickTemplateId = tpl.id;
+      quickModalTitle.textContent = tpl.label;
+      quickForm.innerHTML = "";
+      const intro = document.createElement('div');
+      intro.className = 'muted';
+      intro.style.fontSize = '12px';
+      intro.textContent = '必須だけ入力して作成できます。オプションは後で追加可能。';
+      quickForm.appendChild(intro);
+
+      const requiredBlocks = [];
+      const optionalBlocks = [];
+
+      tpl.fields.forEach((field) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'modal-section';
+        const typeAttr = field.type === "number" ? 'type="number"' : 'type="text"';
+        wrapper.innerHTML = `
+          <label>${field.label} ${field.required ? '<span class="badge required">◎</span>' : ''}</label>
+          <input class="input" ${typeAttr} data-key="${field.key}" placeholder="${field.placeholder || ''}">
+        `;
+        (field.required ? requiredBlocks : optionalBlocks).push(wrapper);
+      });
+
+      const requiredContainer = document.createElement('div');
+      requiredContainer.className = 'modal-section';
+      requiredBlocks.forEach((el) => requiredContainer.appendChild(el));
+      quickForm.appendChild(requiredContainer);
+
+      if (optionalBlocks.length) {
+        const optionalContainer = document.createElement('div');
+        optionalContainer.className = 'collapsible';
+        optionalContainer.innerHTML = `
+          <div class="collapsible-header">
+            <div>
+              <strong>オプション項目 (${optionalBlocks.length})</strong>
+              <div class="muted" style="font-size:12px;">後で編集できます</div>
+            </div>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="collapsible-body hidden"></div>
+        `;
+        const body = optionalContainer.querySelector('.collapsible-body');
+        optionalBlocks.forEach((el) => body.appendChild(el));
+        optionalContainer.querySelector('.collapsible-header').addEventListener('click', () => {
+          const isHidden = body.classList.contains('hidden');
+          body.classList.toggle('hidden', !isHidden);
+          optionalContainer.querySelector('.chevron').textContent = isHidden ? '▴' : '▾';
+        });
+        quickForm.appendChild(optionalContainer);
+      }
+      quickModal.style.display = "flex";
+    }
+
+    function closeQuickModal() {
+      quickModal.style.display = "none";
+      currentQuickTemplateId = null;
+    }
+    quickModalClose?.addEventListener('click', closeQuickModal);
+    quickModalCancel?.addEventListener('click', closeQuickModal);
+    quickModal?.addEventListener('click', (e) => {
+      if (e.target === quickModal) closeQuickModal();
+    });
+
+    quickModalSave?.addEventListener('click', () => {
+      if (!currentQuickTemplateId) return closeQuickModal();
+      const tpl = quickTemplates.find((t) => t.id === currentQuickTemplateId);
+      if (!tpl) return closeQuickModal();
+      const record = { status: "Draft" };
+      let valid = true;
+      const errors = [];
+      tpl.fields.forEach((f) => {
+        const el = quickForm.querySelector(`[data-key="${f.key}"]`);
+        if (!el) return;
+        const value = el.value.trim();
+        if (f.required && !value) {
+          valid = false;
+          errors.push(`${f.label} は必須です`);
+        }
+        if (value) record[f.key] = value;
+      });
+      if (!valid) {
+        alert(errors.join("\n"));
+        return;
+      }
+      if (!contentStore[tpl.id]) contentStore[tpl.id] = [];
+      contentStore[tpl.id].push(record);
+      currentModelId = tpl.id;
+      renderModelList();
+      renderContentModelList();
+      renderContentTable();
+      updateActionsVisibility();
+      switchView('content');
+      closeQuickModal();
+    });
 
     function renderContentModelList() {
       if (!contentModelList) return;
@@ -1331,10 +1769,13 @@
           renderContentTable();
           renderModelList();
           renderGroups();
+          sendJoin(currentModelId);
         });
         contentModelList.appendChild(row);
       });
     }
+
+    const updatedCells = [];
 
     function renderContentTable() {
       if (!contentTable) return;
@@ -1364,18 +1805,31 @@
               <option value="Draft" ${item.status !== "Published" ? "selected" : ""}>Draft</option>
             </select>
           </span></td>
-          ${fields.map((f) => `<td class="cell-editable"><input class="inline-input" data-row="${rowIdx}" data-key="${f.key}" value="${item[f.key] || ""}"></td>`).join("")}
+          ${fields.map((f) => `<td class="cell-editable" style="position:relative; overflow:visible;">
+              <input class="inline-input" data-row="${rowIdx}" data-key="${f.key}" value="${item[f.key] || ""}">
+              <div class="tooltip"></div>
+            </td>`).join("")}
         `;
         tbody.appendChild(tr);
       });
 
       const tplKey = (templateList.find((t)=>t.id===currentModelId)?.key) || currentModelId;
       contentModelLabel.textContent = `${modelStore[currentModelId].label} / #${tplKey}`;
+      applyUpdatedHighlights();
     }
 
     function openItemModal() {
       itemForm.innerHTML = "";
       itemModalTitle.textContent = modelStore[currentModelId].label;
+      const intro = document.createElement('div');
+      intro.className = 'muted';
+      intro.style.fontSize = '12px';
+      intro.textContent = '必須項目だけ入力すれば作成できます。オプションは後で編集できます。';
+      itemForm.appendChild(intro);
+
+      const requiredBlocks = [];
+      const optionalBlocks = [];
+
       currentFields().forEach((f, idx) => {
         const meta = currentMeta()[idx];
         const wrapper = document.createElement('div');
@@ -1384,8 +1838,39 @@
           <label>${meta.display || f.label} ${meta.required ? '<span class="badge required">◎</span>' : ''}</label>
           ${renderInputForField(f, meta)}
         `;
-        itemForm.appendChild(wrapper);
+        if (meta.required) {
+          requiredBlocks.push(wrapper);
+        } else {
+          optionalBlocks.push(wrapper);
+        }
       });
+      const requiredContainer = document.createElement('div');
+      requiredContainer.className = 'modal-section';
+      requiredBlocks.forEach((el) => requiredContainer.appendChild(el));
+      itemForm.appendChild(requiredContainer);
+
+      if (optionalBlocks.length) {
+        const optionalContainer = document.createElement('div');
+        optionalContainer.className = 'collapsible';
+        optionalContainer.innerHTML = `
+          <div class="collapsible-header" id="optional-toggle">
+            <div>
+              <strong>オプション項目 (${optionalBlocks.length})</strong>
+              <div class="muted" style="font-size:12px;">後で編集できます</div>
+            </div>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="collapsible-body hidden" id="optional-body"></div>
+        `;
+        const body = optionalContainer.querySelector('#optional-body');
+        optionalBlocks.forEach((el) => body.appendChild(el));
+        optionalContainer.querySelector('#optional-toggle').addEventListener('click', () => {
+          const isHidden = body.classList.contains('hidden');
+          body.classList.toggle('hidden', !isHidden);
+          optionalContainer.querySelector('.chevron').textContent = isHidden ? '▴' : '▾';
+        });
+        itemForm.appendChild(optionalContainer);
+      }
       itemModal.style.display = "flex";
     }
 
@@ -1397,6 +1882,12 @@
             ${meta.options.map((opt) => `<option value="${opt}">${opt}</option>`).join("")}
           </select>
         `;
+      }
+      if (f.type === "Int") {
+        return `<input class="input" type="number" step="1" data-key="${meta.key}">`;
+      }
+      if (f.type === "Float") {
+        return `<input class="input" type="number" step="any" data-key="${meta.key}">`;
       }
       if (f.type === "Boolean") {
         return `
@@ -1490,7 +1981,8 @@
       }
       if (key) {
         e.target.classList.remove('cell-error');
-        e.target.title = '';
+        const tooltip = e.target.parentElement.querySelector('.tooltip');
+        if (tooltip) tooltip.style.display = 'none';
       }
     });
 
@@ -1498,9 +1990,15 @@
       if (key === 'status') return { ok: true };
       if (meta?.required && !value) return { ok: false, reason: '必須です' };
       let pattern = meta?.pattern;
-      if (key === 'identifier') pattern = '^\\d+$'; // ID must be digits
+      let hint = "";
+      if (key === 'identifier') {
+        pattern = '^\\d+$'; // ID must be digits
+        hint = "数字のみ、空欄不可";
+      } else if (pattern) {
+        hint = `Pattern: ${pattern}`;
+      }
       if (pattern && value && !(new RegExp(pattern).test(value))) {
-        return { ok: false, reason: '形式が正しくありません' };
+        return { ok: false, reason: hint || '形式が正しくありません' };
       }
       return { ok: true };
     }
@@ -1519,16 +2017,23 @@
       const validation = validateCell(key, value, meta);
       if (!validation.ok) {
         e.target.classList.add('cell-error');
-        e.target.title = validation.reason || '入力エラー';
-        e.target.value = e.target.dataset.prev || '';
+        const tooltip = e.target.parentElement.querySelector('.tooltip');
+        if (tooltip) {
+          tooltip.textContent = validation.reason || '入力エラー';
+          tooltip.style.display = 'block';
+        }
+        // keep user input (do not revert), just block save/broadcast
         return;
       }
       e.target.classList.remove('cell-error');
-      e.target.title = '';
+      const tooltip = e.target.parentElement.querySelector('.tooltip');
+      if (tooltip) tooltip.style.display = 'none';
       const record = (contentStore[currentModelId] || [])[rowIdx];
       if (!record) return;
+      const oldValue = record[key];
       record[key] = value;
-      sendPatch(currentModelId, contentStore[currentModelId]);
+      markCellUpdated(rowIdx, key);
+      sendPatch(currentModelId, [{ rowId: Number(rowIdx), key, oldValue, newValue: value, ts: Date.now(), user: currentUser }]);
       // keep highlight if checkbox or focused; remove if neither
       const checkbox = contentTable.querySelector(`.content-select-row[data-row="${rowIdx}"]`);
       if (!(checkbox && checkbox.checked)) {
@@ -1587,7 +2092,12 @@
         }
       }
       renderContentTable();
-      sendPatch(currentModelId, contentStore[currentModelId]);
+      const edits = [];
+      selected.forEach((idx) => {
+        if (!items[idx]) return;
+        edits.push({ rowId: idx, key: "status", oldValue: items[idx].status, newValue: items[idx].status, ts: Date.now(), user: currentUser });
+      });
+      sendPatch(currentModelId, edits);
       contentActionsMenu.classList.remove('active');
     });
 
@@ -1604,6 +2114,21 @@
     function unhighlightRow(rowIdx) {
       const row = contentTable?.querySelector(`tr[data-row="${rowIdx}"]`);
       if (row) row.classList.remove('active-row');
+    }
+
+    function markCellUpdated(rowIdx, key) {
+      updatedCells.push({ rowIdx, key, ts: Date.now() });
+    }
+
+    function applyUpdatedHighlights() {
+      if (!contentTable) return;
+      updatedCells.splice(0).forEach(({ rowIdx, key }) => {
+        const input = contentTable.querySelector(`input[data-row="${rowIdx}"][data-key="${key}"]`);
+        if (input) {
+          input.classList.add('cell-updated');
+          setTimeout(() => input.classList.remove('cell-updated'), 1200);
+        }
+      });
     }
 
     function toggleTplMenu(id) {
@@ -1625,17 +2150,22 @@
         return;
       }
       ws.addEventListener("open", () => {
-        ws.send(JSON.stringify({ type: "join", modelId: currentModelId }));
+        sendJoin(currentModelId);
       });
       ws.addEventListener("message", (evt) => {
         try {
           const msg = JSON.parse(evt.data);
           if (msg.type === "snapshot" && msg.modelId === currentModelId) {
-            contentStore[msg.modelId] = msg.items || [];
+            contentStore[msg.modelId] = msg.items || contentStore[msg.modelId] || [];
             renderContentTable();
           }
           if (msg.type === "patch" && msg.modelId === currentModelId) {
-            contentStore[msg.modelId] = msg.items || [];
+            if (!contentStore[msg.modelId]) contentStore[msg.modelId] = [];
+            msg.edits?.forEach((edit) => {
+              if (!contentStore[msg.modelId][edit.rowId]) contentStore[msg.modelId][edit.rowId] = {};
+              contentStore[msg.modelId][edit.rowId][edit.key] = edit.newValue;
+              markCellUpdated(edit.rowId, edit.key);
+            });
             renderContentTable();
           }
         } catch (_) {}
@@ -1644,9 +2174,13 @@
         setTimeout(initWS, 2000);
       });
     }
-    function sendPatch(modelId, items) {
+    function sendPatch(modelId, edits) {
       if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      ws.send(JSON.stringify({ type: "patch", modelId, items }));
+      ws.send(JSON.stringify({ type: "patch", modelId, edits, user: currentUser }));
+    }
+    function sendJoin(modelId) {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      ws.send(JSON.stringify({ type: "join", modelId, user: currentUser }));
     }
 
     renderModelList();
@@ -1656,6 +2190,7 @@
     renderTemplates();
     renderContentModelList();
     renderContentTable();
+    renderQuickCards();
     initWS();
     updateActionsVisibility();
 
