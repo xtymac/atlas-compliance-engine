@@ -381,7 +381,7 @@
       color: var(--ink);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       border-left: 3px solid transparent;
       transition: all 120ms ease;
     }
@@ -391,6 +391,34 @@
       color: var(--accent);
       border-left-color: var(--accent);
       font-weight: 500;
+    }
+    .schema-group-icon {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #5eead4;
+      border-radius: 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 2px;
+      flex-shrink: 0;
+    }
+    .schema-group-icon span {
+      width: 100%;
+      height: 2px;
+      background: #5eead4;
+      border-radius: 1px;
+    }
+    .field-group-icon {
+      width: 28px;
+      height: 28px;
+      padding: 4px;
+      gap: 3px;
+    }
+    .field-group-icon span {
+      height: 3px;
     }
     .schema-main {
       background: #fff;
@@ -1822,7 +1850,7 @@
         ]
       },
       "address": {
-        label: "所在地(Address)",
+        label: "所在地 (Address)",
         key: "address",
         fields: [
           { label: "所在地", key: "address", type: "Text" },
@@ -1836,7 +1864,7 @@
         ]
       },
       "contact": {
-        label: "連絡先(Contact)",
+        label: "連絡先 (Contact)",
         key: "contact",
         fields: [
           { label: "電話番号", key: "telephone", type: "Text" },
@@ -1995,6 +2023,17 @@
       return iconMap[type] || { icon: 'T', class: 'text' };
     }
 
+    // Check if a field label matches a group name and return the group id
+    function findMatchingGroup(fieldLabel) {
+      for (const groupId of groupList) {
+        const group = groupStore[groupId];
+        if (group && group.label === fieldLabel) {
+          return groupId;
+        }
+      }
+      return null;
+    }
+
     function renderFields() {
       if (!fieldListEl) return;
       fieldListEl.innerHTML = "";
@@ -2002,13 +2041,25 @@
         const card = document.createElement('div');
         card.className = 'field-card';
         card.dataset.index = idx;
-        const typeInfo = getFieldTypeIcon(f.type);
         const meta = currentMeta()[idx];
         const isRequired = meta?.required || f.required;
         const requiredMark = isRequired ? '*' : '';
+
+        // Check if this field is a group reference
+        const matchingGroupId = findMatchingGroup(f.label);
+        const isGroupField = matchingGroupId !== null;
+
+        let iconHtml;
+        if (isGroupField) {
+          iconHtml = `<div class="schema-group-icon field-group-icon"><span></span><span></span></div>`;
+        } else {
+          const typeInfo = getFieldTypeIcon(f.type);
+          iconHtml = `<div class="field-type-icon ${typeInfo.class}">${typeInfo.icon}</div>`;
+        }
+
         card.innerHTML = `
           <span class="drag-handle" draggable="true" title="Drag">≡</span>
-          <div class="field-type-icon ${typeInfo.class}">${typeInfo.icon}</div>
+          ${iconHtml}
           <div class="field-card-center">
             <span class="field-card-name">${f.label}${requiredMark}</span>
             <span class="field-card-key">#${f.key}</span>
@@ -2018,7 +2069,25 @@
             <button class="field-card-action" title="More" onclick="event.stopPropagation();">⋯</button>
           </div>
         `;
-        card.addEventListener('click', () => openModal(idx));
+
+        // Click handler - if group field, navigate to group; otherwise open modal
+        if (isGroupField) {
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => {
+            currentGroupId = matchingGroupId;
+            const group = groupStore[matchingGroupId];
+            const titleEl = document.getElementById('schema-model-title');
+            const keyEl = document.getElementById('schema-model-key');
+            if (titleEl) titleEl.textContent = group.label;
+            if (keyEl) keyEl.textContent = '#' + group.key;
+            renderModelList();
+            renderGroups();
+            renderFields();
+            removePlaceholder();
+          });
+        } else {
+          card.addEventListener('click', () => openModal(idx));
+        }
         card.addEventListener('dragover', (e) => {
           e.preventDefault();
           card.classList.add('drop-target');
@@ -2080,7 +2149,10 @@
         row.className = 'schema-group-item';
         if (currentGroupId === groupId) row.classList.add('active');
         row.dataset.group = groupId;
-        row.innerHTML = `<span>${group.label}</span>`;
+        row.innerHTML = `
+          <div class="schema-group-icon"><span></span><span></span></div>
+          <span>${group.label}</span>
+        `;
         row.addEventListener('click', () => {
           currentGroupId = groupId;
           // Update header title and key
