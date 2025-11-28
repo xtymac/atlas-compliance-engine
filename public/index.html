@@ -127,7 +127,8 @@
       transition: background 120ms ease;
     }
     .nav-list button:hover { background: #f3f4f6; }
-    .nav-list button.active { background: #f3f4f6; color: #222; }
+    .nav-list button.active { background: #e7f3ff; color: #1677ff; }
+    .nav-list button.active .nav-icon { filter: none; opacity: 1; }
     .nav-list button .nav-icon { width: 16px; text-align: center; filter: grayscale(1); opacity: 0.7; }
     .nav-collapse-btn {
       all: unset;
@@ -149,6 +150,9 @@
     .workspace {
       padding: 32px 24px;
       background: #f6f6f6;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 64px);
     }
     .hidden { display: none !important; }
     /* Models page */
@@ -193,8 +197,10 @@
       background: #fff;
       border-radius: 8px;
       padding: 24px;
+      padding-bottom: 72px;
       position: relative;
-      min-height: 500px;
+      flex: 1;
+      min-height: 400px;
     }
     /* Welcome Banner */
     .welcome-banner {
@@ -526,6 +532,95 @@
       .layout { grid-template-columns: 1fr; }
       .cards { grid-template-columns: 1fr; }
     }
+    /* Excel Import Modal */
+    .upload-dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 48px 24px;
+      text-align: center;
+      transition: all 200ms ease;
+      cursor: pointer;
+    }
+    .upload-dropzone:hover,
+    .upload-dropzone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .upload-text {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .upload-text strong { color: var(--ink); }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .excel-field-list {
+      max-height: 400px;
+      overflow-y: auto;
+      display: grid;
+      gap: 8px;
+    }
+    .excel-field-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      display: grid;
+      gap: 6px;
+    }
+    .excel-field-card .field-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .excel-field-card .field-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .excel-field-card .field-key {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .excel-field-card select,
+    .excel-field-card input {
+      font-size: 13px;
+      padding: 6px 8px;
+    }
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .warning-banner {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      color: #92400e;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -685,6 +780,7 @@
           <h2>Templates</h2>
           <p>標準テンプレートを適用 / プレビュー</p>
         </div>
+        <button id="excel-import-btn" class="btn primary">+ Create from Excel (AI)</button>
       </div>
       <div class="cards" id="templates-cards"></div>
     </div>
@@ -892,6 +988,85 @@
       <div class="modal-actions">
         <button id="quick-modal-cancel" class="btn">Cancel</button>
         <button id="quick-modal-save" class="btn primary">Save Draft</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Excel Import Modal -->
+  <div id="excel-import-backdrop" class="modal-backdrop">
+    <div class="modal" style="max-width: 900px; max-height: 90vh;">
+      <div class="modal-header">
+        <div>
+          <div class="muted" style="font-size:12px;">Create Template from Excel</div>
+          <h3 id="excel-import-title" style="margin:0;">Import Excel File</h3>
+        </div>
+        <button id="excel-import-close" class="btn">✕</button>
+      </div>
+
+      <!-- Upload Step -->
+      <div id="excel-upload-step" class="modal-body">
+        <div class="upload-dropzone" id="excel-dropzone">
+          <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" hidden>
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">
+            <strong>Drop Excel file here or click to browse</strong>
+            <span class="muted">Supports .xlsx, .xls, and .csv files (max 10MB)</span>
+          </div>
+          <button class="btn primary" id="excel-browse-btn">Browse Files</button>
+        </div>
+      </div>
+
+      <!-- Loading Step -->
+      <div id="excel-loading-step" class="modal-body hidden">
+        <div style="text-align: center; padding: 40px;">
+          <div class="loading-spinner"></div>
+          <div style="font-weight: 500; margin-bottom: 8px;">Analyzing Excel file...</div>
+          <div class="muted">AI is generating schema based on your data</div>
+        </div>
+      </div>
+
+      <!-- Preview Step -->
+      <div id="excel-preview-step" class="modal-body hidden">
+        <div id="excel-warning-banner" class="warning-banner hidden"></div>
+        <div class="modal-tabs">
+          <div class="modal-tab active" data-excel-tab="fields">Fields (<span id="excel-field-count">0</span>)</div>
+          <div class="modal-tab" data-excel-tab="settings">Template Settings</div>
+          <div class="modal-tab" data-excel-tab="json">JSON Preview</div>
+        </div>
+
+        <!-- Fields Tab -->
+        <div class="modal-section excel-tab-pane" data-excel-pane="fields">
+          <div id="excel-field-list" class="excel-field-list"></div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="modal-section excel-tab-pane hidden" data-excel-pane="settings">
+          <div style="display: grid; gap: 12px;">
+            <div>
+              <label>Template Name</label>
+              <input id="excel-tpl-label" placeholder="My Template">
+            </div>
+            <div>
+              <label>Template ID (kebab-case)</label>
+              <input id="excel-tpl-id" placeholder="my-template" pattern="^[a-z0-9-]+$">
+              <div class="muted" style="font-size:12px;">小文字英数字とハイフンのみ</div>
+            </div>
+            <div>
+              <label>Description</label>
+              <textarea id="excel-tpl-desc" placeholder="Description of the template"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- JSON Tab -->
+        <div class="modal-section excel-tab-pane hidden" data-excel-pane="json">
+          <pre id="excel-json-preview" style="background:#f5f5f5; padding:12px; border-radius:8px; overflow:auto; max-height: 300px; font-size: 12px;"></pre>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="excel-import-cancel" class="btn">Cancel</button>
+        <button id="excel-import-save" class="btn primary hidden">Create Template</button>
       </div>
     </div>
   </div>
@@ -2204,6 +2379,279 @@
       if (!ws || ws.readyState !== WebSocket.OPEN) return;
       ws.send(JSON.stringify({ type: "join", modelId, user: currentUser }));
     }
+
+    // Excel Import functionality
+    const excelImportBtn = document.getElementById('excel-import-btn');
+    const excelImportBackdrop = document.getElementById('excel-import-backdrop');
+    const excelImportClose = document.getElementById('excel-import-close');
+    const excelImportCancel = document.getElementById('excel-import-cancel');
+    const excelImportSave = document.getElementById('excel-import-save');
+    const excelDropzone = document.getElementById('excel-dropzone');
+    const excelFileInput = document.getElementById('excel-file-input');
+    const excelBrowseBtn = document.getElementById('excel-browse-btn');
+    const excelUploadStep = document.getElementById('excel-upload-step');
+    const excelLoadingStep = document.getElementById('excel-loading-step');
+    const excelPreviewStep = document.getElementById('excel-preview-step');
+    const excelFieldList = document.getElementById('excel-field-list');
+    const excelFieldCount = document.getElementById('excel-field-count');
+    const excelTplLabel = document.getElementById('excel-tpl-label');
+    const excelTplId = document.getElementById('excel-tpl-id');
+    const excelTplDesc = document.getElementById('excel-tpl-desc');
+    const excelJsonPreview = document.getElementById('excel-json-preview');
+    const excelWarningBanner = document.getElementById('excel-warning-banner');
+
+    let currentExcelSchema = null;
+
+    function openExcelImportModal() {
+      excelImportBackdrop.style.display = 'flex';
+      resetExcelImport();
+    }
+
+    function closeExcelImportModal() {
+      excelImportBackdrop.style.display = 'none';
+      resetExcelImport();
+    }
+
+    function resetExcelImport() {
+      currentExcelSchema = null;
+      excelFileInput.value = '';
+      excelUploadStep.classList.remove('hidden');
+      excelLoadingStep.classList.add('hidden');
+      excelPreviewStep.classList.add('hidden');
+      excelImportSave.classList.add('hidden');
+      excelWarningBanner.classList.add('hidden');
+      excelFieldList.innerHTML = '';
+      excelTplLabel.value = '';
+      excelTplId.value = '';
+      excelTplDesc.value = '';
+    }
+
+    function showExcelLoading() {
+      excelUploadStep.classList.add('hidden');
+      excelLoadingStep.classList.remove('hidden');
+      excelPreviewStep.classList.add('hidden');
+    }
+
+    function showExcelPreview(result) {
+      excelUploadStep.classList.add('hidden');
+      excelLoadingStep.classList.add('hidden');
+      excelPreviewStep.classList.remove('hidden');
+      excelImportSave.classList.remove('hidden');
+
+      currentExcelSchema = result.schema;
+
+      // Show warning if not AI-generated
+      if (result.warning || !result.aiGenerated) {
+        excelWarningBanner.textContent = result.warning || 'Schema was generated using rule-based analysis (AI unavailable).';
+        excelWarningBanner.classList.remove('hidden');
+      } else {
+        excelWarningBanner.classList.add('hidden');
+      }
+
+      // Populate fields
+      excelTplLabel.value = result.schema.label || '';
+      excelTplId.value = result.schema.id || '';
+      excelTplDesc.value = result.schema.description || '';
+
+      renderExcelFields(result.schema.fields);
+      updateExcelJsonPreview();
+    }
+
+    function renderExcelFields(fields) {
+      excelFieldCount.textContent = fields.length;
+      excelFieldList.innerHTML = fields.map((field, idx) => `
+        <div class="excel-field-card" data-index="${idx}">
+          <div class="field-top">
+            <div>
+              <input class="field-name" value="${escapeHtml(field.label)}" data-field="label" style="font-weight:600; border:none; padding:0; font-size:14px;" placeholder="Field Label">
+              <div class="field-key">#<input value="${escapeHtml(field.fieldKey)}" data-field="fieldKey" style="border:none; padding:0; font-size:12px; color: var(--muted); width: 120px;" placeholder="fieldKey"></div>
+            </div>
+            <select data-field="type" style="min-width: 140px;">
+              <option value="string" ${field.type === 'string' ? 'selected' : ''}>String</option>
+              <option value="number" ${field.type === 'number' ? 'selected' : ''}>Number</option>
+              <option value="date" ${field.type === 'date' ? 'selected' : ''}>Date</option>
+              <option value="boolean" ${field.type === 'boolean' ? 'selected' : ''}>Boolean</option>
+              <option value="latitude" ${field.type === 'latitude' ? 'selected' : ''}>Latitude</option>
+              <option value="longitude" ${field.type === 'longitude' ? 'selected' : ''}>Longitude</option>
+              <option value="controlledVocabulary" ${field.type === 'controlledVocabulary' ? 'selected' : ''}>Controlled Vocabulary</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+              <input type="checkbox" data-field="required" ${field.required ? 'checked' : ''}> Required
+            </label>
+            ${field.type === 'controlledVocabulary' && field.options ? `
+              <div class="muted" style="font-size: 11px;">Options: ${field.options.slice(0, 3).join(', ')}${field.options.length > 3 ? '...' : ''}</div>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      // Add change listeners
+      excelFieldList.querySelectorAll('[data-field]').forEach(input => {
+        input.addEventListener('change', () => updateFieldFromInput(input));
+        input.addEventListener('input', () => updateFieldFromInput(input));
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function updateFieldFromInput(input) {
+      const card = input.closest('.excel-field-card');
+      const idx = parseInt(card.dataset.index);
+      const fieldName = input.dataset.field;
+      const value = input.type === 'checkbox' ? input.checked : input.value;
+
+      if (currentExcelSchema && currentExcelSchema.fields[idx]) {
+        currentExcelSchema.fields[idx][fieldName] = value;
+        updateExcelJsonPreview();
+      }
+    }
+
+    function updateExcelJsonPreview() {
+      if (!currentExcelSchema) return;
+      const schema = {
+        ...currentExcelSchema,
+        id: excelTplId.value || currentExcelSchema.id,
+        label: excelTplLabel.value || currentExcelSchema.label,
+        description: excelTplDesc.value || currentExcelSchema.description
+      };
+      excelJsonPreview.textContent = JSON.stringify(schema, null, 2);
+    }
+
+    async function uploadExcelFile(file) {
+      showExcelLoading();
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/v1/excel-to-schema/analyze', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to analyze file');
+        }
+
+        const result = await response.json();
+        showExcelPreview(result);
+      } catch (error) {
+        alert('Error: ' + error.message);
+        resetExcelImport();
+      }
+    }
+
+    async function saveExcelTemplate() {
+      if (!currentExcelSchema) return;
+
+      const schema = {
+        ...currentExcelSchema,
+        id: excelTplId.value.trim() || currentExcelSchema.id,
+        label: excelTplLabel.value.trim() || currentExcelSchema.label,
+        description: excelTplDesc.value.trim() || currentExcelSchema.description
+      };
+
+      // Validate ID
+      if (!/^[a-z0-9-]+$/.test(schema.id)) {
+        alert('Template ID must be kebab-case (lowercase letters, numbers, and hyphens only)');
+        return;
+      }
+
+      try {
+        const response = await fetch('/v1/excel-to-schema/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            schema: {
+              ...schema,
+              fields: schema.fields.map(f => ({
+                ...f,
+                pattern: f.pattern?.source || f.pattern
+              }))
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || error.errors?.join(', ') || 'Failed to create template');
+        }
+
+        // Add to local templateList for immediate UI update
+        templateList.push({
+          id: schema.id,
+          label: schema.label,
+          key: schema.id.replace(/-/g, '_'),
+          version: 'v1.0',
+          category: 'imported',
+          summary: schema.description || 'Imported from Excel'
+        });
+
+        closeExcelImportModal();
+        renderTemplates();
+        renderTemplateModalCards();
+        alert('Template created successfully!');
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // Event listeners
+    excelImportBtn?.addEventListener('click', openExcelImportModal);
+    excelImportClose?.addEventListener('click', closeExcelImportModal);
+    excelImportCancel?.addEventListener('click', closeExcelImportModal);
+    excelImportBackdrop?.addEventListener('click', (e) => {
+      if (e.target === excelImportBackdrop) closeExcelImportModal();
+    });
+
+    excelBrowseBtn?.addEventListener('click', () => excelFileInput?.click());
+    excelDropzone?.addEventListener('click', (e) => {
+      if (e.target !== excelBrowseBtn) excelFileInput?.click();
+    });
+
+    excelFileInput?.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) uploadExcelFile(file);
+    });
+
+    excelDropzone?.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      excelDropzone.classList.add('drag-over');
+    });
+    excelDropzone?.addEventListener('dragleave', () => {
+      excelDropzone.classList.remove('drag-over');
+    });
+    excelDropzone?.addEventListener('drop', (e) => {
+      e.preventDefault();
+      excelDropzone.classList.remove('drag-over');
+      const file = e.dataTransfer?.files?.[0];
+      if (file) uploadExcelFile(file);
+    });
+
+    excelImportSave?.addEventListener('click', saveExcelTemplate);
+
+    // Tab switching for excel modal
+    document.querySelectorAll('[data-excel-tab]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const pane = tab.dataset.excelTab;
+        document.querySelectorAll('[data-excel-tab]').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('[data-excel-pane]').forEach(p => p.classList.add('hidden'));
+        tab.classList.add('active');
+        document.querySelector(`[data-excel-pane="${pane}"]`)?.classList.remove('hidden');
+        if (pane === 'json') updateExcelJsonPreview();
+      });
+    });
+
+    // Update JSON preview when settings change
+    excelTplLabel?.addEventListener('input', updateExcelJsonPreview);
+    excelTplId?.addEventListener('input', updateExcelJsonPreview);
+    excelTplDesc?.addEventListener('input', updateExcelJsonPreview);
 
     renderModelList();
     renderGroups();

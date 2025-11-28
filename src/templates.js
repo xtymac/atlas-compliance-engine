@@ -242,7 +242,28 @@ function getTemplateById(id) {
   return templates.find((tpl) => tpl.id === id);
 }
 
+function addTemplate(template) {
+  // Check for duplicate ID
+  if (templates.find((t) => t.id === template.id)) {
+    throw new Error(`Template with ID "${template.id}" already exists`);
+  }
+
+  // Ensure required properties
+  const newTemplate = {
+    id: template.id,
+    label: template.label,
+    description: template.description || "",
+    oneClickRigor: template.oneClickRigor || false,
+    fields: template.fields || [],
+    generatedAt: new Date().toISOString(),
+  };
+
+  templates.push(newTemplate);
+  return newTemplate;
+}
+
 module.exports = {
   getTemplates,
   getTemplateById,
+  addTemplate,
 };

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const { v4: uuid } = require("uuid");
 const { getTemplates, getTemplateById } = require("./templates");
@@ -6,6 +7,7 @@ const { CkanAdapter } = require("./integrations/ckan");
 const { OrionPublisher } = require("./integrations/orion");
 const { issueToken, ensureAuthenticated } = require("./security/oauth");
 const assetsRouter = require("./routes/assets");
+const excelSchemaRouter = require("./routes/excel-schema");
 
 const app = express();
 app.use(express.json());
@@ -104,6 +106,7 @@ app.post("/v1/datasets", async (req, res) => {
 });
 
 app.use("/v1/assets", assetsRouter); // DAS abstraction layer - heavy files
+app.use("/v1/excel-to-schema", excelSchemaRouter); // AI-powered Excel to schema
 
 // Error abstraction: consistent HTTP status codes
 // eslint-disable-next-line no-unused-vars
