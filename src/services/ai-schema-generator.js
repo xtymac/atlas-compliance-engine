@@ -376,7 +376,9 @@ async function generateSchemaWithAI(analysis, options = {}) {
         model,
         useStrict
       );
+      console.log("AI response (first 500 chars):", response?.substring(0, 500));
       const parsed = parseAIResponse(response);
+      console.log("Parsed schema:", { id: parsed.id, label: parsed.label, fieldCount: parsed.fields?.length });
       const validated = validateSchema(parsed);
 
       return {

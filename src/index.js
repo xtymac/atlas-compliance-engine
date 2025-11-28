@@ -11,6 +11,13 @@ const excelSchemaRouter = require("./routes/excel-schema");
 
 const app = express();
 app.use(express.json());
+// Disable caching for development
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
 app.use(express.static("public"));
 
 const PORT = process.env.PORT || 4000;
@@ -30,7 +37,10 @@ app.get("/status", (_req, res) => {
 // OAuth 2.0 - Resource Owner Password style token issuance for prototype
 app.post("/oauth/token", issueToken);
 
-// Protect everything under /v1
+// Excel-to-schema endpoint (public - accessed from browser UI)
+app.use("/v1/excel-to-schema", excelSchemaRouter);
+
+// Protect everything else under /v1
 app.use("/v1", ensureAuthenticated);
 
 app.get("/v1/model-templates", (_req, res) => {
@@ -106,7 +116,6 @@ app.post("/v1/datasets", async (req, res) => {
 });
 
 app.use("/v1/assets", assetsRouter); // DAS abstraction layer - heavy files
-app.use("/v1/excel-to-schema", excelSchemaRouter); // AI-powered Excel to schema
 
 // Error abstraction: consistent HTTP status codes
 // eslint-disable-next-line no-unused-vars

@@ -85,6 +85,15 @@ router.post("/analyze", upload.single("file"), async (req, res) => {
 
     const analysis = parseExcelFile(req.file.buffer, req.file.originalname);
 
+    // Debug logging
+    console.log("Excel analysis:", {
+      filename: analysis.filename,
+      headerCount: analysis.headers.length,
+      headers: analysis.headers.slice(0, 5),
+      columnCount: analysis.columns.length,
+      sampleDataRows: analysis.sampleData.length
+    });
+
     // Check if AI should be skipped (for testing or if explicitly requested)
     const skipAI = req.query.skipAI === "true";
 

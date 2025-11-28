@@ -319,38 +319,218 @@
     }
     .dropdown-menu button:hover { background: #f3f4f6; }
     /* Schema page */
-    main.schema { background: var(--surface); }
-    .schema-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
-    .tabbar { display: flex; gap: 14px; margin: 10px 0 12px 0; border-bottom: 1px solid var(--border); }
-    .tab { padding: 10px 0; cursor: pointer; font-weight: 600; border-bottom: 2px solid transparent; color: #4b5563; }
-    .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
-    .layout { display: grid; grid-template-columns: 240px 1fr 260px; gap: 16px; align-items: start; }
-    .left-list {
-      border: 1px solid var(--border); border-radius: 12px; background: #fdfdfd; padding: 14px;
-      height: calc(100vh - 160px); overflow: auto;
+    main.schema { background: var(--surface); padding: 0 !important; }
+    .schema-layout-wrapper {
+      display: grid;
+      grid-template-columns: 220px 1fr 280px;
+      min-height: calc(100vh - 64px);
+      background: #f6f6f6;
     }
-    .section-title { font-weight: 700; font-size: 12px; color: #6b7280; margin: 12px 0 8px; }
+    .schema-sidebar {
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 0;
+      overflow-y: auto;
+    }
+    .schema-sidebar-section {
+      padding: 0;
+    }
+    .schema-sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 16px 8px 16px;
+    }
+    .schema-sidebar-header .section-title {
+      margin: 0;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .schema-sidebar-header .add-btn {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .schema-sidebar-header .add-btn:hover { text-decoration: underline; }
+    .schema-model-item {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--ink);
+      border-left: 3px solid transparent;
+      transition: all 120ms ease;
+    }
+    .schema-model-item:hover { background: #f3f4f6; }
+    .schema-model-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 500;
+    }
+    .schema-group-item {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 3px solid transparent;
+      transition: all 120ms ease;
+    }
+    .schema-group-item:hover { background: #f3f4f6; }
+    .schema-group-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 500;
+    }
+    .schema-main {
+      background: #fff;
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .schema-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0;
+    }
+    .schema-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .schema-header h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .schema-header .schema-key {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 400;
+    }
+    .schema-header-menu {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--muted);
+      border-radius: 4px;
+    }
+    .schema-header-menu:hover { background: #f3f4f6; }
+    .tabbar { display: flex; gap: 24px; margin: 16px 0; border-bottom: 1px solid var(--border); }
+    .tab { padding: 12px 0; cursor: pointer; font-weight: 500; border-bottom: 2px solid transparent; color: var(--muted); font-size: 14px; }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab:hover:not(.active) { color: var(--ink); }
+    .layout { display: none; }
+    .left-list { display: none; }
+    .section-title { font-weight: 700; font-size: 11px; color: #6b7280; margin: 12px 0 8px; letter-spacing: 0.05em; text-transform: uppercase; }
     .item { padding: 9px 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .item.active { background: #e6f0ff; color: #0f4bb8; }
-    .group-row { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin: 6px 0; background: #fff; }
-    .group-row .muted { font-size: 12px; }
+    .group-row { display: none; }
     .field-list {
-      border: 1px solid var(--border); border-radius: 12px; background: #fff; box-shadow: var(--shadow);
-      min-height: 400px; padding: 10px;
+      background: #fff;
+      min-height: 400px;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
     }
     .field-card {
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      display: grid;
-      gap: 6px;
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       margin: 8px 0;
       background: #fff;
-      transition: transform 140ms ease, margin 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+      transition: all 140ms ease;
       cursor: pointer;
     }
+    .field-card:hover { border-color: #d0d0d0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .field-card.drop-target { border-color: #2563eb; background: #f0f7ff; }
-    .field-badges { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .field-card-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    .field-card-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: center;
+    }
+    .field-card-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .field-card-name {
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .field-card-key {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .field-card-action {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--muted);
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+    .field-card:hover .field-card-action { opacity: 1; }
+    .field-card-action:hover { background: #f3f4f6; color: var(--ink); }
+    .field-type-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .field-type-icon.text { background: #fef3c7; color: #d97706; }
+    .field-type-icon.textarea { background: #dbeafe; color: #2563eb; }
+    .field-type-icon.markdown { background: #e0e7ff; color: #4f46e5; }
+    .field-type-icon.asset { background: #f3e8ff; color: #9333ea; }
+    .field-type-icon.date { background: #dcfce7; color: #16a34a; }
+    .field-type-icon.boolean { background: #fce7f3; color: #db2777; }
+    .field-type-icon.option { background: #cffafe; color: #0891b2; }
+    .field-type-icon.int, .field-type-icon.float { background: #fef3c7; color: #ea580c; }
+    .field-type-icon.coordinate { background: #d1fae5; color: #059669; }
+    .field-type-icon.url { background: #e0f2fe; color: #0284c7; }
+    .field-type-icon.group { background: #dbeafe; color: #2563eb; }
+    .field-badges { display: none; }
     .badge.required {
       background: #fee2e2;
       color: #b91c1c;
@@ -363,41 +543,249 @@
     }
     .field-placeholder {
       border: 1px dashed #2563eb;
-      border-radius: 10px;
+      border-radius: 8px;
       height: 54px;
       margin: 8px 0;
       background: #f8fbff;
       transition: all 140ms ease;
     }
     /* Content page */
-    .content-layout { display: grid; grid-template-columns: 220px 1fr; gap: 16px; }
+    .content-layout { display: grid; grid-template-columns: 220px 1fr; gap: 0; }
     .content-sidebar {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fdfdfd;
-      padding: 12px;
+      border-right: 1px solid var(--border);
+      background: #fff;
+      padding: 0;
+      min-height: calc(100vh - 180px);
     }
-    .content-table-wrap { position: relative; overflow: visible; border-radius: 12px; }
+    .content-sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .content-sidebar-header .section-title {
+      margin: 0;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      letter-spacing: 0.05em;
+    }
+    .content-sidebar-header .add-model-btn {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .content-sidebar-header .add-model-btn:hover { text-decoration: underline; }
+    .content-model-item {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--ink);
+      border-left: 3px solid transparent;
+      transition: all 120ms ease;
+    }
+    .content-model-item:hover { background: #f3f4f6; }
+    .content-model-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 500;
+    }
+    .content-main { padding: 0 20px 20px; background: #fff; }
+    .content-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .content-header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .content-header-title h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .content-header-title .model-key {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 400;
+    }
+    .content-save-view {
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .content-save-view:hover { color: var(--accent); }
+    .content-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .content-search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+    .content-search-input {
+      width: 200px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .content-search-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .content-search-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .content-filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .content-filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .content-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+    .content-toolbar-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .content-toolbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .content-table-wrap { position: relative; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
     .content-table {
       width: 100%;
       border-collapse: collapse;
       background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: visible;
+      min-width: 900px;
     }
-    .content-table th, .content-table td {
+    .content-table th {
       border-bottom: 1px solid var(--border);
-      padding: 10px;
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink);
+      background: #fafafa;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .content-table th .sort-icon { color: var(--muted); margin-left: 4px; font-size: 10px; }
+    .content-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 8px 12px;
       text-align: left;
       font-size: 13px;
+      white-space: nowrap;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .content-table tr:last-child td { border-bottom: none; }
+    .content-table tr:hover td { background: #f9fafb; }
     .content-table tr.active-row td { background: #f0f7ff; }
+    .content-table .col-checkbox { width: 40px; text-align: center; }
+    .content-table .col-icon { width: 36px; text-align: center; padding: 8px 6px; }
+    .icon-edit, .icon-detail {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .icon-edit { color: var(--accent); }
+    .icon-edit:hover { background: var(--accent-soft); }
+    .icon-detail {
+      background: #f3f4f6;
+      color: #6b7280;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .icon-detail:hover { background: #e5e7eb; }
     .status-dot { display: inline-flex; align-items: center; gap: 6px; }
     .dot { width: 8px; height: 8px; border-radius: 50%; }
     .dot.published { background: #16a34a; }
     .dot.draft { background: #f59e0b; }
+    .content-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .content-pagination .page-info { margin-right: 8px; }
+    .content-pagination-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .content-pagination-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .content-pagination-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+    .content-pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .content-pagination-select {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 12px;
+      background: #fff;
+      cursor: pointer;
+    }
     .chip { display: inline-block; padding: 4px 8px; border-radius: 999px; background: #f3f4f6; font-size: 12px; }
     .cell-editable { background: #fff; }
     .inline-input {
@@ -495,25 +883,81 @@
     .quick-card h3 { margin: 0 0 4px 0; font-size: 15px; }
     .quick-card .muted { font-size: 13px; }
     .quick-hint { color: var(--muted); font-size: 13px; margin-top: 6px; }
-    .field-meta { display: flex; align-items: center; gap: 10px; color: #6b7280; font-size: 12px; }
-    .drag-handle { width: 14px; height: 14px; border: 1px solid var(--border); border-radius: 4px; display: grid; place-items: center; font-size: 11px; color: #6b7280; cursor: grab; }
-    .field-type { padding: 2px 6px; border-radius: 999px; background: var(--accent-soft); color: #0f4bb8; font-size: 11px; font-weight: 700; }
+    .field-meta { display: none; }
+    .drag-handle {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #9ca3af;
+      cursor: grab;
+      flex-shrink: 0;
+    }
+    .drag-handle:hover { color: #6b7280; }
+    .field-type { display: none; }
+    .field-top { display: none; }
     .palette {
-      background: #fbfcfd;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      height: 100%;
-      overflow: auto;
+      background: #fff;
+      padding: 20px;
+      border-left: 1px solid var(--border);
+      border-radius: 0;
+      height: auto;
+      overflow-y: auto;
     }
-    .palette-title { font-weight: 700; margin: 0 0 8px 0; }
-    .palette-group { margin-bottom: 16px; }
+    .palette-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin: 0 0 16px 0;
+      color: var(--ink);
+    }
+    .palette-group { margin-bottom: 20px; }
+    .palette-group .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #9ca3af;
+      margin: 0 0 8px 0;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
     .palette-item {
-      border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: #fff;
-      display: grid; gap: 4px; margin: 6px 0; cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 4px 0;
+      cursor: grab;
+      box-shadow: none;
+      transition: background 120ms ease;
     }
-    .palette-item:hover { border-color: var(--accent); }
-    .palette-item strong { font-size: 13px; }
+    .palette-item:hover { background: #f3f4f6; }
+    .palette-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .palette-item-icon.text { background: #fef3c7; color: #d97706; }
+    .palette-item-icon.textarea { background: #dbeafe; color: #2563eb; }
+    .palette-item-icon.markdown { background: #e0e7ff; color: #4f46e5; }
+    .palette-item-icon.asset { background: #f3e8ff; color: #9333ea; }
+    .palette-item-icon.date { background: #dcfce7; color: #16a34a; }
+    .palette-item-icon.boolean { background: #fce7f3; color: #db2777; }
+    .palette-item-icon.option { background: #cffafe; color: #0891b2; }
+    .palette-item-icon.int, .palette-item-icon.float { background: #fef3c7; color: #ea580c; }
+    .palette-item-icon.coordinate { background: #d1fae5; color: #059669; }
+    .palette-item-icon.url { background: #e0f2fe; color: #0284c7; }
+    .palette-item-content { display: flex; flex-direction: column; gap: 2px; }
+    .palette-item strong { font-size: 14px; font-weight: 500; color: var(--ink); }
     .palette-item span { color: var(--muted); font-size: 12px; }
     .drop-hint {
       text-align: center; color: #9ca3af; font-size: 13px; padding: 12px 0;
@@ -521,7 +965,7 @@
     }
     @media (max-width: 1200px) {
       .shell { grid-template-columns: 200px 1fr; }
-      .layout { grid-template-columns: 200px 1fr; }
+      .schema-layout-wrapper { grid-template-columns: 180px 1fr; }
       .palette { display: none; }
     }
     @media (max-width: 900px) {
@@ -531,6 +975,8 @@
       .nav-collapse-btn { display: none; }
       .layout { grid-template-columns: 1fr; }
       .cards { grid-template-columns: 1fr; }
+      .schema-layout-wrapper { grid-template-columns: 1fr; }
+      .schema-sidebar { display: none; }
     }
     /* Excel Import Modal */
     .upload-dropzone {
@@ -746,26 +1192,42 @@
 
     <div id="schema-wrapper" class="schema hidden">
       <main class="schema workspace">
-        <div class="schema-header">
-          <h2>公共施設一覧</h2>
-          <span class="muted">#public_facility</span>
-      </div>
-        <div class="tabbar">
-          <div class="tab active">Fields</div>
-          <div class="tab">Meta Data</div>
-        </div>
-
-        <div class="layout">
-        <div class="left-list">
-            <div class="section-title">MODELS <span style="float:right; color:#2563eb; cursor:pointer;">+ Add</span></div>
-            <div id="model-list"></div>
-            <div class="section-title">GROUPS</div>
-            <div id="group-list"></div>
+        <div class="schema-layout-wrapper">
+          <!-- Left Sidebar -->
+          <div class="schema-sidebar">
+            <div class="schema-sidebar-section">
+              <div class="schema-sidebar-header">
+                <span class="section-title">Models</span>
+                <span class="add-btn">+ Add</span>
+              </div>
+              <div id="model-list"></div>
+            </div>
+            <div class="schema-sidebar-section">
+              <div class="schema-sidebar-header">
+                <span class="section-title">Groups</span>
+                <span class="add-btn">+ Add</span>
+              </div>
+              <div id="group-list"></div>
+            </div>
           </div>
 
-          <div>
+          <!-- Main Content -->
+          <div class="schema-main">
+            <div class="schema-header">
+              <div class="schema-header-left">
+                <h2 id="schema-model-title">公共施設一覧</h2>
+                <span class="schema-key" id="schema-model-key">#public_facility</span>
+              </div>
+              <button class="schema-header-menu">⋮</button>
+            </div>
+            <div class="tabbar">
+              <div class="tab active">Fields</div>
+              <div class="tab">Meta Data</div>
+            </div>
             <div id="field-list" class="field-list"></div>
           </div>
+
+          <!-- Right Palette -->
           <div class="palette">
             <h3 class="palette-title">Add Field</h3>
             <div id="palette"></div>
@@ -785,22 +1247,30 @@
       <div class="cards" id="templates-cards"></div>
     </div>
 
-    <div id="content-view" class="workspace hidden">
-      <div class="header-row">
-        <div>
-          <h2>Content</h2>
-          <p id="content-model-label">Select a model to view items</p>
-        </div>
-        <button id="new-item-btn" class="btn primary">+ New Item</button>
-      </div>
+    <div id="content-view" class="workspace hidden" style="padding:0; background:#fff;">
       <div class="content-layout">
         <div class="content-sidebar">
-          <div class="section-title">MODELS</div>
+          <div class="content-sidebar-header">
+            <span class="section-title">MODELS</span>
+            <span class="add-model-btn">+ Add</span>
+          </div>
           <div id="content-model-list"></div>
         </div>
-        <div>
-          <div class="row" style="gap:8px; margin-bottom:8px; align-items:center;">
-            <input id="content-search" class="input" placeholder="search text" style="max-width:220px;">
+        <div class="content-main">
+          <div class="content-header-bar">
+            <div class="content-header-title">
+              <h3 id="content-model-name">公共施設一覧</h3>
+              <span class="model-key" id="content-model-key">#public_facility</span>
+            </div>
+            <button id="new-item-btn" class="btn primary">+ New Item</button>
+          </div>
+          <div class="content-save-view">Save as new view</div>
+          <div class="content-toolbar">
+            <div class="content-search-wrap">
+              <input id="content-search" class="content-search-input" placeholder="input search text">
+              <button class="content-search-btn">🔍</button>
+            </div>
+            <button class="content-filter-btn">+ Filter</button>
             <div class="dropdown" style="display:none;" id="content-actions-wrap">
               <button id="content-actions-btn" class="btn">⋯ Actions</button>
               <div id="content-actions-menu" class="dropdown-menu" style="min-width:180px;">
@@ -811,12 +1281,30 @@
                 <button data-action="sort-desc">Sort by first column Z→A</button>
               </div>
             </div>
+            <div class="content-toolbar-right">
+              <button class="content-toolbar-btn" title="Settings">⚙</button>
+              <button class="content-toolbar-btn" title="Refresh">↻</button>
+              <button class="content-toolbar-btn" title="Toggle columns">T</button>
+              <button class="content-toolbar-btn" title="Download">⬇</button>
+              <button class="content-toolbar-btn" title="Fullscreen">⛶</button>
+            </div>
           </div>
           <div class="content-table-wrap">
             <table class="content-table" id="content-table">
               <thead></thead>
               <tbody></tbody>
             </table>
+          </div>
+          <div class="content-pagination" id="content-pagination">
+            <span class="page-info" id="page-info">1-5 of 5 items</span>
+            <button class="content-pagination-btn" disabled>‹</button>
+            <button class="content-pagination-btn active">1</button>
+            <button class="content-pagination-btn">›</button>
+            <select class="content-pagination-select">
+              <option>20 / page</option>
+              <option>50 / page</option>
+              <option>100 / page</option>
+            </select>
           </div>
         </div>
       </div>
@@ -1089,10 +1577,10 @@
         quick: quickView,
         content: contentView,
       };
-      Object.values(viewMap).forEach((el) => el.classList.add('hidden'));
+      Object.values(viewMap).forEach((el) => el && el.classList.add('hidden'));
       if (viewMap[target]) viewMap[target].classList.remove('hidden');
       navButtons.forEach((b) => b.classList.toggle('active', b.dataset.view === target));
-      crumbTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
+      if (crumbTitle) crumbTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1);
       try {
         localStorage.setItem('ace_last_view', target);
       } catch (_) {}
@@ -1145,25 +1633,31 @@
 
     const paletteGroups = [
       { title: "Text", items: [
-        { label: "Text", desc: "単行テキスト", type: "Text" },
-        { label: "TextArea", desc: "複数行テキスト", type: "TextArea" },
-        { label: "Markdown", desc: "リッチテキスト", type: "Markdown" }
+        { label: "Text", desc: "Heading and titles, one-line field", type: "Text" },
+        { label: "TextArea", desc: "Multi line text", type: "TextArea" },
+        { label: "Markdown text", desc: "Rich text which supports md style", type: "Markdown" }
       ]},
       { title: "Asset", items: [
-        { label: "Asset", desc: "ファイル / 3D Tiles / CityGML", type: "Asset" }
+        { label: "Asset", desc: "Asset file", type: "Asset" }
       ]},
       { title: "Time", items: [
         { label: "Date", desc: "Date picker", type: "Date" }
       ]},
       { title: "Boolean", items: [
-        { label: "Boolean", desc: "true/false", type: "Boolean" }
+        { label: "Boolean", desc: "true/false field", type: "Boolean" }
       ]},
       { title: "Select", items: [
-        { label: "Option", desc: "統制語彙 / Enum", type: "Option" }
+        { label: "Option", desc: "Multiple select", type: "Option" }
       ]},
       { title: "Number", items: [
         { label: "Int", desc: "Integer", type: "Int" },
         { label: "Float", desc: "Fractional", type: "Float" }
+      ]},
+      { title: "URL", items: [
+        { label: "URL", desc: "http/https URL", type: "URL" }
+      ]},
+      { title: "Relation", items: [
+        { label: "Reference", desc: "Reference to other model", type: "Reference" }
       ]},
       { title: "Geo", items: [
         { label: "Coordinate", desc: "緯度・経度 (GIF)", type: "Coordinate" }
@@ -1271,23 +1765,150 @@
     ];
     const contentStore = {
       "public-facilities": [
-        { status: "Published", localGovernmentCode: "352080", identifier: "1200005", name: "中央図書館", nameEn: "Central Library", nameAlias: "中央図書館", poiCode: "1001", externalIdentifier: "lib-central", externalIdentifierValue: "LC-001", address: "山口県岩国市", latitudeLongitude: "34.1, 132.2" },
-        { status: "Draft", localGovernmentCode: "352080", identifier: "1200006", name: "市民プール", nameEn: "City Pool", nameAlias: "市民プール", poiCode: "1002", externalIdentifier: "pool-city", externalIdentifierValue: "PC-002", address: "山口県岩国市", latitudeLongitude: "34.2, 132.3" }
-      ],
-      "aed-locations": [
-        { status: "Published", localGovernmentCode: "131016", identifier: "aed-01", name: "市役所 1F", address: "東京都新宿区", pediatricSupport: "yes", latitudeLongitude: "35.6, 139.7" }
+        { status: "Published", localGovernmentCode: "352080", identifier: "1200005", name: "01kafp2rw7ah5...", nameEn: "-", nameAlias: "01kafp2rw7afz...", poiCode: "-", externalIdentifier: "01kafp2rw75c0...", externalIdentifierValue: "01kafp2rw...", address: "山口県岩国市中央町1-1-1", latitudeLongitude: "34.1689, 132.2196" },
+        { status: "Published", localGovernmentCode: "352080", identifier: "1200004", name: "01kafnjw124wg...", nameEn: "-", nameAlias: "01kafnjw1298w...", poiCode: "-", externalIdentifier: "01kafnjw12j24n...", externalIdentifierValue: "01kafnjw1...", address: "山口県岩国市麻里布町2-3-4", latitudeLongitude: "34.1721, 132.2234" },
+        { status: "Published", localGovernmentCode: "352080", identifier: "1200003", name: "01kafn5xyy3gjj...", nameEn: "-", nameAlias: "01kafn5xyy9aa...", poiCode: "-", externalIdentifier: "01kafn5xyyjsjy...", externalIdentifierValue: "01kafn5xy...", address: "山口県岩国市今津町3-5-6", latitudeLongitude: "34.1756, 132.2189" },
+        { status: "Draft", localGovernmentCode: "352080", identifier: "1200002", name: "01kafmtd40t97...", nameEn: "-", nameAlias: "01kafmtd400p...", poiCode: "-", externalIdentifier: "01kafmtd407ec...", externalIdentifierValue: "01kafmtd...", address: "山口県岩国市室の木町4-7-8", latitudeLongitude: "34.1645, 132.2267" },
+        { status: "Draft", localGovernmentCode: "352080", identifier: "1200001", name: "01kafgc46hgp...", nameEn: "-", nameAlias: "01kafgc46jm5b...", poiCode: "-", externalIdentifier: "01kafgc46jnyw...", externalIdentifierValue: "01kafgc46...", address: "山口県岩国市山手町5-9-10", latitudeLongitude: "34.1698, 132.2145" }
       ],
       "childcare-facilities": [
-        { status: "Published", localGovernmentCode: "131016", identifier: "cc-01", facilityName: "さくら保育園", address: "東京都杉並区", facilityCategory: "保育所", latitudeLongitude: "35.7, 139.6" }
+        { status: "Published", localGovernmentCode: "131016", identifier: "cc-001", facilityName: "さくら保育園", address: "東京都杉並区高円寺北1-2-3", facilityCategory: "保育所", openingHours: "07:00-19:00", latitudeLongitude: "35.7052, 139.6498" },
+        { status: "Published", localGovernmentCode: "131016", identifier: "cc-002", facilityName: "ひまわり幼稚園", address: "東京都杉並区阿佐谷南2-4-6", facilityCategory: "幼稚園", openingHours: "08:30-14:00", latitudeLongitude: "35.7034, 139.6356" },
+        { status: "Published", localGovernmentCode: "131016", identifier: "cc-003", facilityName: "つばめ学童クラブ", address: "東京都杉並区荻窪3-5-8", facilityCategory: "学童保育", openingHours: "14:00-19:00", latitudeLongitude: "35.7089, 139.6201" },
+        { status: "Draft", localGovernmentCode: "131016", identifier: "cc-004", facilityName: "こすもす保育園", address: "東京都杉並区西荻北4-7-9", facilityCategory: "保育所", openingHours: "07:30-18:30", latitudeLongitude: "35.7123, 139.5989" }
+      ],
+      "aed-locations": [
+        { status: "Published", localGovernmentCode: "131016", identifier: "aed-001", name: "新宿区役所 1F受付", installationPlace: "正面玄関入口右側", address: "東京都新宿区歌舞伎町1-4-1", pediatricSupport: "yes", contactPhone: "03-3209-1111", latitudeLongitude: "35.6938, 139.7035" },
+        { status: "Published", localGovernmentCode: "131016", identifier: "aed-002", name: "新宿駅東口交番", installationPlace: "交番内入口付近", address: "東京都新宿区新宿3-38-1", pediatricSupport: "yes", contactPhone: "03-3354-0110", latitudeLongitude: "35.6896, 139.7006" },
+        { status: "Published", localGovernmentCode: "131016", identifier: "aed-003", name: "新宿中央公園管理事務所", installationPlace: "管理棟1F事務室", address: "東京都新宿区西新宿2-11", pediatricSupport: "no", contactPhone: "03-3342-4509", latitudeLongitude: "35.6912, 139.6891" },
+        { status: "Draft", localGovernmentCode: "131016", identifier: "aed-004", name: "新宿スポーツセンター", installationPlace: "2Fロビー自販機横", address: "東京都新宿区大久保3-5-1", pediatricSupport: "yes", contactPhone: "03-3232-0171", latitudeLongitude: "35.7012, 139.6978" },
+        { status: "Draft", localGovernmentCode: "131016", identifier: "aed-005", name: "落合第一地域センター", installationPlace: "1F事務室前廊下", address: "東京都新宿区下落合4-6-7", pediatricSupport: "no", contactPhone: "03-3954-6611", latitudeLongitude: "35.7156, 139.6834" }
       ]
     };
 
     let currentModelId = "public-facilities";
+    let currentGroupId = null; // null means viewing model, otherwise viewing group
+
+    // Group store with fields for each group
+    const groupStore = {
+      "name": {
+        label: "名称 (Name)",
+        key: "name",
+        fields: [
+          { label: "地方公共団体名", key: "localGovernmentName", type: "Text" },
+          { label: "名称", key: "name", type: "Text", required: true },
+          { label: "名称_カナ", key: "nameKana", type: "Text" },
+          { label: "名称_英字", key: "nameEn", type: "Text" },
+          { label: "名称_通称", key: "alternateName", type: "Text" }
+        ],
+        meta: [
+          { display: "地方公共団体名", key: "localGovernmentName", required: false },
+          { display: "名称", key: "name", required: true },
+          { display: "名称_カナ", key: "nameKana", required: false },
+          { display: "名称_英字", key: "nameEn", required: false },
+          { display: "名称_通称", key: "alternateName", required: false }
+        ]
+      },
+      "external-id": {
+        label: "外部識別子",
+        key: "externalId",
+        fields: [
+          { label: "外部識別子タイプ", key: "externalIdentifierType", type: "Text" },
+          { label: "外部識別子", key: "externalIdentifier", type: "Text" }
+        ],
+        meta: [
+          { display: "外部識別子タイプ", key: "externalIdentifierType", required: false },
+          { display: "外部識別子", key: "externalIdentifier", required: false }
+        ]
+      },
+      "address": {
+        label: "所在地(Address)",
+        key: "address",
+        fields: [
+          { label: "所在地", key: "address", type: "Text" },
+          { label: "方書", key: "addressDetail", type: "Text" },
+          { label: "郵便番号", key: "postalCode", type: "Text" }
+        ],
+        meta: [
+          { display: "所在地", key: "address", required: true },
+          { display: "方書", key: "addressDetail", required: false },
+          { display: "郵便番号", key: "postalCode", required: false }
+        ]
+      },
+      "contact": {
+        label: "連絡先(Contact)",
+        key: "contact",
+        fields: [
+          { label: "電話番号", key: "telephone", type: "Text" },
+          { label: "内線番号", key: "extension", type: "Text" },
+          { label: "FAX番号", key: "fax", type: "Text" },
+          { label: "メールアドレス", key: "email", type: "Text" }
+        ],
+        meta: [
+          { display: "電話番号", key: "telephone", required: false },
+          { display: "内線番号", key: "extension", required: false },
+          { display: "FAX番号", key: "fax", required: false },
+          { display: "メールアドレス", key: "email", required: false }
+        ]
+      },
+      "schedule": {
+        label: "利用可能時間",
+        key: "schedule",
+        fields: [
+          { label: "利用可能曜日", key: "availableDays", type: "Option" },
+          { label: "開始時間", key: "startTime", type: "Text" },
+          { label: "終了時間", key: "endTime", type: "Text" },
+          { label: "利用可能時間特記事項", key: "scheduleNote", type: "TextArea" }
+        ],
+        meta: [
+          { display: "利用可能曜日", key: "availableDays", required: false },
+          { display: "開始時間", key: "startTime", required: false },
+          { display: "終了時間", key: "endTime", required: false },
+          { display: "利用可能時間特記事項", key: "scheduleNote", required: false }
+        ]
+      },
+      "accessibility": {
+        label: "車椅子",
+        key: "accessibility",
+        fields: [
+          { label: "車椅子対応", key: "wheelchairAccessible", type: "Boolean" },
+          { label: "バリアフリー対応", key: "barrierFree", type: "Boolean" },
+          { label: "備考", key: "accessibilityNote", type: "TextArea" }
+        ],
+        meta: [
+          { display: "車椅子対応", key: "wheelchairAccessible", required: false },
+          { display: "バリアフリー対応", key: "barrierFree", required: false },
+          { display: "備考", key: "accessibilityNote", required: false }
+        ]
+      },
+      "media": {
+        label: "画像 (Media)",
+        key: "media",
+        fields: [
+          { label: "画像", key: "image", type: "Asset" },
+          { label: "画像_ライセンス", key: "imageLicense", type: "Text" },
+          { label: "URL", key: "url", type: "URL" }
+        ],
+        meta: [
+          { display: "画像", key: "image", required: false },
+          { display: "画像_ライセンス", key: "imageLicense", required: false },
+          { display: "URL", key: "url", required: false }
+        ]
+      }
+    };
+
+    const groupList = ["name", "external-id", "address", "contact", "schedule", "accessibility", "media"];
 
     function currentFields() {
+      if (currentGroupId && groupStore[currentGroupId]) {
+        return groupStore[currentGroupId].fields;
+      }
       return modelStore[currentModelId].fields;
     }
     function currentMeta() {
+      if (currentGroupId && groupStore[currentGroupId]) {
+        return groupStore[currentGroupId].meta;
+      }
       return modelStore[currentModelId].meta;
     }
     function currentGroups() {
@@ -1356,6 +1977,24 @@
       removePlaceholder();
     }
 
+    function getFieldTypeIcon(type) {
+      const iconMap = {
+        'Text': { icon: 'T', class: 'text' },
+        'TextArea': { icon: '≡', class: 'textarea' },
+        'Markdown': { icon: 'MD', class: 'markdown' },
+        'Asset': { icon: '📁', class: 'asset' },
+        'Date': { icon: '📅', class: 'date' },
+        'Boolean': { icon: '◐', class: 'boolean' },
+        'Option': { icon: '≡', class: 'option' },
+        'Int': { icon: '9', class: 'int' },
+        'Float': { icon: '∞', class: 'float' },
+        'Coordinate': { icon: '📍', class: 'coordinate' },
+        'URL': { icon: '🔗', class: 'url' },
+        'Reference': { icon: '↗', class: 'group' }
+      };
+      return iconMap[type] || { icon: 'T', class: 'text' };
+    }
+
     function renderFields() {
       if (!fieldListEl) return;
       fieldListEl.innerHTML = "";
@@ -1363,22 +2002,20 @@
         const card = document.createElement('div');
         card.className = 'field-card';
         card.dataset.index = idx;
+        const typeInfo = getFieldTypeIcon(f.type);
+        const meta = currentMeta()[idx];
+        const isRequired = meta?.required || f.required;
+        const requiredMark = isRequired ? '*' : '';
         card.innerHTML = `
-          <div class="field-top">
-            <div class="field-meta">
-              <span class="drag-handle" draggable="true" title="Drag">≡</span>
-              <strong>${f.label}</strong>
-            </div>
-            <span class="field-type">${f.type}</span>
+          <span class="drag-handle" draggable="true" title="Drag">≡</span>
+          <div class="field-type-icon ${typeInfo.class}">${typeInfo.icon}</div>
+          <div class="field-card-center">
+            <span class="field-card-name">${f.label}${requiredMark}</span>
+            <span class="field-card-key">#${f.key}</span>
           </div>
-          <div class="field-meta">
-            <span>#${f.key}</span>
-            ${f.meta ? `<span>• ${f.meta}</span>` : ""}
-          </div>
-          <div class="field-badges">
-            <span class="field-type">${f.type}</span>
-            ${currentMeta()[idx].required ? '<span class="badge required">◎ Required</span>' : ""}
-            ${currentMeta()[idx].pattern ? `<span class="badge validation">Pattern: ${currentMeta()[idx].pattern}</span>` : ""}
+          <div class="field-card-right">
+            <button class="field-card-action" title="Copy" onclick="event.stopPropagation();">📋</button>
+            <button class="field-card-action" title="More" onclick="event.stopPropagation();">⋯</button>
           </div>
         `;
         card.addEventListener('click', () => openModal(idx));
@@ -1410,12 +2047,19 @@
       container.innerHTML = "";
       Object.keys(modelStore).forEach((id) => {
         const item = document.createElement('div');
-        item.className = 'item';
-        if (id === currentModelId) item.classList.add('active');
+        item.className = 'schema-model-item';
+        // Only show as active if viewing model (not a group) and this is the current model
+        if (id === currentModelId && currentGroupId === null) item.classList.add('active');
         item.dataset.model = id;
         item.textContent = modelStore[id].label;
         item.addEventListener('click', () => {
           currentModelId = id;
+          currentGroupId = null; // Clear group selection when clicking on model
+          // Update header title and key
+          const titleEl = document.getElementById('schema-model-title');
+          const keyEl = document.getElementById('schema-model-key');
+          if (titleEl) titleEl.textContent = modelStore[id].label;
+          if (keyEl) keyEl.textContent = '#' + id.replace(/-/g, '_');
           renderModelList();
           renderGroups();
           renderFields();
@@ -1429,25 +2073,46 @@
       const container = document.getElementById('group-list');
       if (!container) return;
       container.innerHTML = "";
-      const groups = currentGroups();
-      if (groups.length === 0) return;
-      const groupMeta = [
-        { name: "基本情報 / 識別子", key: "Core / ID", examples: "全国地方公共団体コード、名称、名称_カナ" },
-        { name: "所在地 / GIS情報", key: "Location", examples: "所在地_連結表記、緯度、経度" },
-        { name: "利用可能日時", key: "Schedule", examples: "利用可能曜日、開始時間、終了時間" },
-        { name: "アクセシビリティ", key: "Accessibility", examples: "車椅子可、授乳室、おむつ替えコーナー" },
-        { name: "参照 / メディア", key: "Media", examples: "URL、画像、画像_ライセンス" }
-      ];
-      (groupMeta.length ? groupMeta : groups.map((g) => ({ name: g, key: "", examples: "" }))).forEach((g) => {
+      groupList.forEach((groupId) => {
+        const group = groupStore[groupId];
+        if (!group) return;
         const row = document.createElement('div');
-        row.className = 'group-row';
-        row.innerHTML = `
-          <div style="font-weight:600;">${g.name}</div>
-          <div class="muted">${g.key || ""}</div>
-          <div class="muted">${g.examples || ""}</div>
-        `;
+        row.className = 'schema-group-item';
+        if (currentGroupId === groupId) row.classList.add('active');
+        row.dataset.group = groupId;
+        row.innerHTML = `<span>${group.label}</span>`;
+        row.addEventListener('click', () => {
+          currentGroupId = groupId;
+          // Update header title and key
+          const titleEl = document.getElementById('schema-model-title');
+          const keyEl = document.getElementById('schema-model-key');
+          if (titleEl) titleEl.textContent = group.label;
+          if (keyEl) keyEl.textContent = '#' + group.key;
+          renderModelList();
+          renderGroups();
+          renderFields();
+          removePlaceholder();
+        });
         container.appendChild(row);
       });
+    }
+
+    function getPaletteIcon(type) {
+      const iconMap = {
+        'Text': { icon: 'T', class: 'text' },
+        'TextArea': { icon: '≡', class: 'textarea' },
+        'Markdown': { icon: 'MD', class: 'markdown' },
+        'Asset': { icon: '📁', class: 'asset' },
+        'Date': { icon: '📅', class: 'date' },
+        'Boolean': { icon: '◐', class: 'boolean' },
+        'Option': { icon: '≡', class: 'option' },
+        'Int': { icon: '9', class: 'int' },
+        'Float': { icon: '∞', class: 'float' },
+        'Coordinate': { icon: '📍', class: 'coordinate' },
+        'URL': { icon: '🔗', class: 'url' },
+        'Reference': { icon: '↗', class: 'group' }
+      };
+      return iconMap[type] || { icon: 'T', class: 'text' };
     }
 
     function renderPalette() {
@@ -1466,7 +2131,14 @@
           el.draggable = true;
           el.dataset.type = item.type;
           el.dataset.label = item.label;
-          el.innerHTML = `<strong>${item.label}</strong><span>${item.desc}</span>`;
+          const iconInfo = getPaletteIcon(item.type);
+          el.innerHTML = `
+            <div class="palette-item-icon ${iconInfo.class}">${iconInfo.icon}</div>
+            <div class="palette-item-content">
+              <strong>${item.label}</strong>
+              <span>${item.desc}</span>
+            </div>
+          `;
           el.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('application/json', JSON.stringify(item));
           });
@@ -1826,7 +2498,6 @@
     const contentActionsBtn = document.getElementById('content-actions-btn');
     const contentActionsWrap = document.getElementById('content-actions-wrap');
     const contentActionsMenu = document.getElementById('content-actions-menu');
-    const contentModelLabel = document.getElementById('content-model-label');
     const newItemBtn = document.getElementById('new-item-btn');
     let currentUser = localStorage.getItem('ace_user') || `User-${Math.floor(Math.random()*1000)}`;
     const itemModal = document.getElementById('item-modal-backdrop');
@@ -1957,7 +2628,7 @@
       contentModelList.innerHTML = "";
       Object.keys(modelStore).forEach((id) => {
         const row = document.createElement('div');
-        row.className = 'item';
+        row.className = 'content-model-item';
         if (id === currentModelId) row.classList.add('active');
         row.textContent = modelStore[id].label;
         row.addEventListener('click', () => {
@@ -1980,9 +2651,14 @@
       const tbody = contentTable.querySelector('tbody');
       thead.innerHTML = "";
       tbody.innerHTML = "";
-      const fields = currentFields().slice(0, 6); // show first few columns
+      const fields = currentFields().slice(0, 7); // show first few columns
       const headerRow = document.createElement('tr');
-      headerRow.innerHTML = `<th><input type="checkbox" id="content-select-all"></th><th>Status</th>${fields.map((f) => `<th>${f.label}</th>`).join("")}`;
+      headerRow.innerHTML = `
+        <th class="col-checkbox"><input type="checkbox" id="content-select-all"></th>
+        <th class="col-icon"></th>
+        <th>Status</th>
+        ${fields.map((f) => `<th>${f.label} <span class="sort-icon">⇅</span></th>`).join("")}
+      `;
       thead.appendChild(headerRow);
 
       const items = (contentStore[currentModelId] || []).filter((item) => {
@@ -1994,24 +2670,30 @@
       items.forEach((item, rowIdx) => {
         const tr = document.createElement('tr');
         tr.dataset.row = rowIdx;
+        const showC = item.status === "Published";
         tr.innerHTML = `
-          <td><input type="checkbox" class="content-select-row" data-row="${rowIdx}"></td>
-          <td><span class="status-dot"><span class="dot ${item.status === "Published" ? "published" : "draft"}"></span>
-            <select class="inline-input" data-row="${rowIdx}" data-key="status">
-              <option value="Published" ${item.status === "Published" ? "selected" : ""}>Published</option>
-              <option value="Draft" ${item.status !== "Published" ? "selected" : ""}>Draft</option>
-            </select>
-          </span></td>
-          ${fields.map((f) => `<td class="cell-editable" style="position:relative; overflow:visible;">
-              <input class="inline-input" data-row="${rowIdx}" data-key="${f.key}" value="${item[f.key] || ""}">
-              <div class="tooltip"></div>
-            </td>`).join("")}
+          <td class="col-checkbox"><input type="checkbox" class="content-select-row" data-row="${rowIdx}"></td>
+          <td class="col-icon">${showC ? '<span class="icon-detail" title="Published">C</span>' : ''}</td>
+          <td><span class="status-dot"><span class="dot ${item.status === "Published" ? "published" : "draft"}"></span> ${item.status}</span></td>
+          ${fields.map((f) => `<td title="${item[f.key] || ""}">${item[f.key] || "-"}</td>`).join("")}
         `;
         tbody.appendChild(tr);
       });
 
+      // Update header with model name and key
       const tplKey = (templateList.find((t)=>t.id===currentModelId)?.key) || currentModelId;
-      contentModelLabel.textContent = `${modelStore[currentModelId].label} / #${tplKey}`;
+      const contentModelName = document.getElementById('content-model-name');
+      const contentModelKey = document.getElementById('content-model-key');
+      if (contentModelName) contentModelName.textContent = modelStore[currentModelId].label;
+      if (contentModelKey) contentModelKey.textContent = `#${tplKey}`;
+
+      // Update pagination info
+      const pageInfo = document.getElementById('page-info');
+      if (pageInfo) {
+        const total = items.length;
+        pageInfo.textContent = `1-${total} of ${total} items`;
+      }
+
       applyUpdatedHighlights();
     }
 
@@ -2353,8 +3035,11 @@
         try {
           const msg = JSON.parse(evt.data);
           if (msg.type === "snapshot" && msg.modelId === currentModelId) {
-            contentStore[msg.modelId] = msg.items || contentStore[msg.modelId] || [];
-            renderContentTable();
+            // Only update if server has data, otherwise keep local sample data
+            if (msg.items && msg.items.length > 0) {
+              contentStore[msg.modelId] = msg.items;
+              renderContentTable();
+            }
           }
           if (msg.type === "patch" && msg.modelId === currentModelId) {
             if (!contentStore[msg.modelId]) contentStore[msg.modelId] = [];
