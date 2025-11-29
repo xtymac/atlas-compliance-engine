@@ -376,7 +376,7 @@
     }
     .schema-group-item {
       padding: 10px 16px;
-      cursor: pointer;
+      cursor: grab;
       font-size: 14px;
       color: var(--ink);
       display: flex;
@@ -386,6 +386,7 @@
       transition: all 120ms ease;
     }
     .schema-group-item:hover { background: #f3f4f6; }
+    .schema-group-item:active { cursor: grabbing; }
     .schema-group-item.active {
       background: var(--accent-soft);
       color: var(--accent);
@@ -435,6 +436,25 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+    .schema-back-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--muted);
+      transition: all 120ms ease;
+    }
+    .schema-back-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
     }
     .schema-header h2 {
       margin: 0;
@@ -1243,6 +1263,7 @@
           <div class="schema-main">
             <div class="schema-header">
               <div class="schema-header-left">
+                <button id="schema-back-btn" class="schema-back-btn hidden" title="Back to model">←</button>
                 <h2 id="schema-model-title">公共施設一覧</h2>
                 <span class="schema-key" id="schema-model-key">#public_facility</span>
               </div>
@@ -1988,8 +2009,25 @@
     }
 
     function addField(item, index = currentFields().length) {
-      const key = `${item.type.toLowerCase()}_${(Date.now()).toString(36).slice(-4)}`;
-      const newField = { label: item.label, key, type: item.type, meta: item.desc };
+      let key, newField;
+
+      if (item.isGroup && item.groupId) {
+        // Group field - use the group's key so it matches for the group icon
+        const group = groupStore[item.groupId];
+        key = group ? group.key : item.groupId;
+        newField = {
+          label: item.label,
+          key,
+          type: 'Group',
+          meta: 'Group reference',
+          groupId: item.groupId
+        };
+      } else {
+        // Regular field
+        key = `${item.type.toLowerCase()}_${(Date.now()).toString(36).slice(-4)}`;
+        newField = { label: item.label, key, type: item.type, meta: item.desc };
+      }
+
       currentFields().splice(index, 0, newField);
       currentMeta().splice(index, 0, {
         display: item.label,
@@ -2018,7 +2056,8 @@
         'Float': { icon: '∞', class: 'float' },
         'Coordinate': { icon: '📍', class: 'coordinate' },
         'URL': { icon: '🔗', class: 'url' },
-        'Reference': { icon: '↗', class: 'group' }
+        'Reference': { icon: '↗', class: 'group' },
+        'Group': { icon: '≡', class: 'group' }
       };
       return iconMap[type] || { icon: 'T', class: 'text' };
     }
@@ -2045,9 +2084,9 @@
         const isRequired = meta?.required || f.required;
         const requiredMark = isRequired ? '*' : '';
 
-        // Check if this field is a group reference
-        const matchingGroupId = findMatchingGroup(f.label);
-        const isGroupField = matchingGroupId !== null;
+        // Check if this field is a group reference (either by label match or direct groupId)
+        let matchingGroupId = f.groupId || findMatchingGroup(f.label);
+        const isGroupField = matchingGroupId !== null && groupStore[matchingGroupId];
 
         let iconHtml;
         if (isGroupField) {
@@ -2065,10 +2104,24 @@
             <span class="field-card-key">#${f.key}</span>
           </div>
           <div class="field-card-right">
-            <button class="field-card-action" title="Copy" onclick="event.stopPropagation();">📋</button>
+            <button class="field-card-action field-delete-btn" title="Delete" data-index="${idx}">🗑</button>
             <button class="field-card-action" title="More" onclick="event.stopPropagation();">⋯</button>
           </div>
         `;
+
+        // Delete button handler
+        const deleteBtn = card.querySelector('.field-delete-btn');
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const fieldIndex = parseInt(deleteBtn.dataset.index);
+            if (confirm(`Delete field "${f.label}"?`)) {
+              currentFields().splice(fieldIndex, 1);
+              currentMeta().splice(fieldIndex, 1);
+              renderFields();
+            }
+          });
+        }
 
         // Click handler - if group field, navigate to group; otherwise open modal
         if (isGroupField) {
@@ -2078,8 +2131,10 @@
             const group = groupStore[matchingGroupId];
             const titleEl = document.getElementById('schema-model-title');
             const keyEl = document.getElementById('schema-model-key');
+            const backBtn = document.getElementById('schema-back-btn');
             if (titleEl) titleEl.textContent = group.label;
             if (keyEl) keyEl.textContent = '#' + group.key;
+            if (backBtn) backBtn.classList.remove('hidden');
             renderModelList();
             renderGroups();
             renderFields();
@@ -2127,8 +2182,10 @@
           // Update header title and key
           const titleEl = document.getElementById('schema-model-title');
           const keyEl = document.getElementById('schema-model-key');
+          const backBtn = document.getElementById('schema-back-btn');
           if (titleEl) titleEl.textContent = modelStore[id].label;
           if (keyEl) keyEl.textContent = '#' + id.replace(/-/g, '_');
+          if (backBtn) backBtn.classList.add('hidden');
           renderModelList();
           renderGroups();
           renderFields();
@@ -2147,19 +2204,33 @@
         if (!group) return;
         const row = document.createElement('div');
         row.className = 'schema-group-item';
+        row.draggable = true;
         if (currentGroupId === groupId) row.classList.add('active');
         row.dataset.group = groupId;
         row.innerHTML = `
           <div class="schema-group-icon"><span></span><span></span></div>
           <span>${group.label}</span>
         `;
+        // Drag handler - allow dragging group into field list
+        row.addEventListener('dragstart', (e) => {
+          const groupData = {
+            label: group.label,
+            type: 'Group',
+            desc: 'Group reference',
+            groupId: groupId,
+            isGroup: true
+          };
+          e.dataTransfer.setData('application/json', JSON.stringify(groupData));
+        });
         row.addEventListener('click', () => {
           currentGroupId = groupId;
           // Update header title and key
           const titleEl = document.getElementById('schema-model-title');
           const keyEl = document.getElementById('schema-model-key');
+          const backBtn = document.getElementById('schema-back-btn');
           if (titleEl) titleEl.textContent = group.label;
           if (keyEl) keyEl.textContent = '#' + group.key;
+          if (backBtn) backBtn.classList.remove('hidden');
           renderModelList();
           renderGroups();
           renderFields();
@@ -3410,9 +3481,36 @@
     excelTplId?.addEventListener('input', updateExcelJsonPreview);
     excelTplDesc?.addEventListener('input', updateExcelJsonPreview);
 
+    // Back button handler
+    const schemaBackBtn = document.getElementById('schema-back-btn');
+    function updateBackButton() {
+      if (schemaBackBtn) {
+        if (currentGroupId !== null) {
+          schemaBackBtn.classList.remove('hidden');
+        } else {
+          schemaBackBtn.classList.add('hidden');
+        }
+      }
+    }
+    if (schemaBackBtn) {
+      schemaBackBtn.addEventListener('click', () => {
+        currentGroupId = null;
+        const titleEl = document.getElementById('schema-model-title');
+        const keyEl = document.getElementById('schema-model-key');
+        if (titleEl) titleEl.textContent = modelStore[currentModelId].label;
+        if (keyEl) keyEl.textContent = '#' + currentModelId.replace(/-/g, '_');
+        renderModelList();
+        renderGroups();
+        renderFields();
+        updateBackButton();
+        removePlaceholder();
+      });
+    }
+
     renderModelList();
     renderGroups();
     renderFields();
+    updateBackButton();
     renderPalette();
     renderTemplates();
     renderContentModelList();
