@@ -318,6 +318,129 @@
       font-size: 13px;
     }
     .dropdown-menu button:hover { background: #f3f4f6; }
+    /* Dropdown item styles */
+    .dropdown-item {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      cursor: pointer;
+      color: var(--ink);
+      font-size: 13px;
+      text-align: left;
+    }
+    .dropdown-item:hover { background: #f3f4f6; }
+    /* Group Add Dropdown */
+    .group-add-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .group-add-dropdown .dropdown-menu {
+      position: fixed;
+      width: 200px;
+      z-index: 1000;
+    }
+    /* GIF Group List */
+    .gif-group-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 12px;
+    }
+    .gif-group-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gif-group-item:hover {
+      background: #f3f4f6;
+      border-color: var(--accent);
+    }
+    .gif-group-item .group-icon {
+      width: 36px;
+      height: 36px;
+      background: #e5e7eb;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-size: 18px;
+    }
+    .gif-group-item .group-info {
+      flex: 1;
+    }
+    .gif-group-item .group-name {
+      font-weight: 500;
+      color: #111827;
+      font-size: 14px;
+    }
+    .gif-group-item .group-name-en {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+    /* Form styles for New Group Modal */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    .required-mark {
+      color: #ef4444;
+      margin-right: 2px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      resize: vertical;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .char-count {
+      text-align: right;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+    .form-hint {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    .search-box {
+      margin-bottom: 8px;
+    }
     /* Schema page */
     main.schema { background: var(--surface); padding: 0 !important; }
     .schema-layout-wrapper {
@@ -1253,7 +1376,13 @@
             <div class="schema-sidebar-section">
               <div class="schema-sidebar-header">
                 <span class="section-title">Groups</span>
-                <span class="add-btn">+ Add</span>
+                <div class="group-add-dropdown">
+                  <span class="add-btn" id="add-group-btn">+ Add</span>
+                  <div id="add-group-menu" class="dropdown-menu">
+                    <div class="dropdown-item" id="new-group-option">New Group</div>
+                    <div class="dropdown-item" id="gif-group-option">共通語彙基盤（GIF）</div>
+                  </div>
+                </div>
               </div>
               <div id="group-list"></div>
             </div>
@@ -1525,6 +1654,52 @@
       <div class="modal-actions">
         <button id="quick-modal-cancel" class="btn">Cancel</button>
         <button id="quick-modal-save" class="btn primary">Save Draft</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Group Modal -->
+  <div id="new-group-modal-backdrop" class="modal-backdrop">
+    <div class="modal" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 style="margin:0;">New Group</h3>
+        <button id="new-group-modal-close" class="btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label"><span class="required-mark">*</span> Group name</label>
+          <input type="text" id="new-group-name" class="form-input" placeholder="">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Group description</label>
+          <textarea id="new-group-description" class="form-textarea" rows="4" placeholder=""></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="required-mark">*</span> Group key</label>
+          <input type="text" id="new-group-key" class="form-input" maxlength="32" placeholder="">
+          <div class="char-count"><span id="group-key-count">0</span> / 32</div>
+          <div class="form-hint">Group key must be unique and at least 3 characters long. It can only contain letters, numbers, underscores, and dashes.</div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="new-group-cancel" class="btn">Cancel</button>
+        <button id="new-group-save" class="btn primary" disabled>OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GIF Group Modal -->
+  <div id="gif-group-modal-backdrop" class="modal-backdrop">
+    <div class="modal" style="max-width: 560px;">
+      <div class="modal-header">
+        <h3 style="margin:0;">共通語彙基盤（GIF）</h3>
+        <button id="gif-group-modal-close" class="btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="search-box">
+          <input type="text" id="gif-group-search" class="form-input" placeholder="Search groups...">
+        </div>
+        <div id="gif-group-list" class="gif-group-list"></div>
       </div>
     </div>
   </div>
@@ -1946,7 +2121,202 @@
       }
     };
 
-    const groupList = ["name", "external-id", "address", "contact", "schedule", "accessibility", "media"];
+    let groupList = ["name", "external-id", "address", "contact", "schedule", "accessibility", "media"];
+
+    // GIF Group 模板定义
+    const gifGroupTemplates = [
+      { id: 'name', label: '施設', labelEn: 'Facility', icon: '🏢' },
+      { id: 'external-id', label: '外部識別子', labelEn: 'External ID', icon: '🔗' },
+      { id: 'address', label: '所在地', labelEn: 'Address', icon: '📍' },
+      { id: 'contact', label: '連絡先', labelEn: 'Contact', icon: '📞' },
+      { id: 'schedule', label: '利用可能時間', labelEn: 'Schedule', icon: '🕐' },
+      { id: 'accessibility', label: 'Accessibility', labelEn: 'Accessibility', icon: '♿' },
+      { id: 'media', label: '画像', labelEn: 'Media', icon: '🖼️' }
+    ];
+
+    // 打开/关闭 New Group Modal
+    function openNewGroupModal() {
+      document.getElementById('add-group-menu').classList.remove('active');
+      document.getElementById('new-group-modal-backdrop').style.display = 'flex';
+      // 清空表单
+      document.getElementById('new-group-name').value = '';
+      document.getElementById('new-group-description').value = '';
+      document.getElementById('new-group-key').value = '';
+      document.getElementById('group-key-count').textContent = '0';
+      document.getElementById('new-group-save').disabled = true;
+    }
+
+    function closeNewGroupModal() {
+      document.getElementById('new-group-modal-backdrop').style.display = 'none';
+    }
+
+    // 打开/关闭 GIF Group Modal
+    function openGifGroupModal() {
+      document.getElementById('add-group-menu').classList.remove('active');
+      document.getElementById('gif-group-modal-backdrop').style.display = 'flex';
+      document.getElementById('gif-group-search').value = '';
+      renderGifGroupList();
+    }
+
+    function closeGifGroupModal() {
+      document.getElementById('gif-group-modal-backdrop').style.display = 'none';
+    }
+
+    // 渲染 GIF Group 列表
+    function renderGifGroupList(filter = '') {
+      const container = document.getElementById('gif-group-list');
+      const filtered = gifGroupTemplates.filter(g =>
+        g.label.includes(filter) ||
+        g.labelEn.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      container.innerHTML = filtered.map(g => `
+        <div class="gif-group-item" data-group-id="${g.id}">
+          <div class="group-icon">${g.icon}</div>
+          <div class="group-info">
+            <div class="group-name">${g.label}</div>
+            <div class="group-name-en">${g.labelEn}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 选择 GIF Group - 跳转到该 Group
+    function selectGifGroup(groupId) {
+      closeGifGroupModal();
+      // 如果 Group 已存在，直接跳转
+      if (groupList.includes(groupId)) {
+        currentGroupId = groupId;
+        const group = groupStore[groupId];
+        
+        // Update header
+        const titleEl = document.getElementById('schema-model-title');
+        const keyEl = document.getElementById('schema-model-key');
+        const backBtn = document.getElementById('schema-back-btn');
+        if (titleEl) titleEl.textContent = group.label;
+        if (keyEl) keyEl.textContent = '#' + group.key;
+        if (backBtn) backBtn.classList.remove('hidden');
+
+        renderModelList();
+        renderGroups();
+        renderFields();
+        removePlaceholder();
+      }
+    }
+
+    // 创建新 Group
+    function createNewGroup() {
+      const name = document.getElementById('new-group-name').value.trim();
+      const description = document.getElementById('new-group-description').value.trim();
+      const key = document.getElementById('new-group-key').value.trim();
+
+      // 验证
+      if (!name || !key || key.length < 3) return;
+      if (!/^[a-zA-Z0-9_-]+$/.test(key)) return;
+      if (groupStore[key]) {
+        alert('Group key already exists');
+        return;
+      }
+
+      // 创建新 Group
+      groupStore[key] = {
+        label: name,
+        key: key,
+        description: description,
+        fields: [],
+        meta: []
+      };
+      groupList.push(key);
+
+      closeNewGroupModal();
+      currentGroupId = key;
+      
+      // Update header
+      const titleEl = document.getElementById('schema-model-title');
+      const keyEl = document.getElementById('schema-model-key');
+      const backBtn = document.getElementById('schema-back-btn');
+      if (titleEl) titleEl.textContent = groupStore[key].label;
+      if (keyEl) keyEl.textContent = '#' + groupStore[key].key;
+      if (backBtn) backBtn.classList.remove('hidden');
+
+      renderModelList();
+      renderGroups();
+      renderFields();
+      removePlaceholder();
+    }
+
+    // 初始化 Group Add 事件
+    function initGroupAddEvents() {
+      const btn = document.getElementById('add-group-btn');
+      const menu = document.getElementById('add-group-menu');
+
+      // 下拉菜单切换
+      btn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isActive = menu.classList.toggle('active');
+        if (isActive) {
+          // 动态定位 dropdown（使用 fixed 定位避免被 overflow 裁剪）
+          const rect = btn.getBoundingClientRect();
+          menu.style.top = (rect.bottom + 4) + 'px';
+          menu.style.left = rect.left + 'px';
+        }
+      });
+
+      // New Group 选项
+      document.getElementById('new-group-option')?.addEventListener('click', openNewGroupModal);
+
+      // GIF Group 选项
+      document.getElementById('gif-group-option')?.addEventListener('click', openGifGroupModal);
+
+      // GIF Group 搜索
+      document.getElementById('gif-group-search')?.addEventListener('input', (e) => {
+        renderGifGroupList(e.target.value);
+      });
+
+      // GIF Group 选择
+      document.getElementById('gif-group-list')?.addEventListener('click', (e) => {
+        const item = e.target.closest('.gif-group-item');
+        if (item) selectGifGroup(item.dataset.groupId);
+      });
+
+      // New Group 表单验证
+      const nameInput = document.getElementById('new-group-name');
+      const keyInput = document.getElementById('new-group-key');
+
+      function validateNewGroupForm() {
+        const name = nameInput?.value.trim();
+        const key = keyInput?.value.trim();
+        const valid = name && key && key.length >= 3 && /^[a-zA-Z0-9_-]+$/.test(key);
+        document.getElementById('new-group-save').disabled = !valid;
+      }
+
+      nameInput?.addEventListener('input', validateNewGroupForm);
+      keyInput?.addEventListener('input', (e) => {
+        document.getElementById('group-key-count').textContent = e.target.value.length;
+        validateNewGroupForm();
+      });
+
+      // 创建 Group
+      document.getElementById('new-group-save')?.addEventListener('click', createNewGroup);
+      document.getElementById('new-group-cancel')?.addEventListener('click', closeNewGroupModal);
+      document.getElementById('new-group-modal-close')?.addEventListener('click', closeNewGroupModal);
+      document.getElementById('gif-group-modal-close')?.addEventListener('click', closeGifGroupModal);
+
+      // 点击外部关闭菜单
+      document.addEventListener('click', (e) => {
+        if (!menu?.contains(e.target) && e.target !== btn) {
+          menu?.classList.remove('active');
+        }
+      });
+
+      // 点击 backdrop 关闭 modal
+      document.getElementById('new-group-modal-backdrop')?.addEventListener('click', (e) => {
+        if (e.target.id === 'new-group-modal-backdrop') closeNewGroupModal();
+      });
+      document.getElementById('gif-group-modal-backdrop')?.addEventListener('click', (e) => {
+        if (e.target.id === 'gif-group-modal-backdrop') closeGifGroupModal();
+      });
+    }
 
     function currentFields() {
       if (currentGroupId && groupStore[currentGroupId]) {
@@ -3527,6 +3897,9 @@
         return 'models';
       }
     })();
+    // 初始化 Group Add 功能
+    initGroupAddEvents();
+
     switchView(lastView);
   </script>
 </body>
